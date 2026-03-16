@@ -1,0 +1,268 @@
+# 由 https://www.toptal.com/developers/gitignore/api/windows,macos,linux,android,xcode,web,flutter,dart 建立
+# 於 https://www.toptal.com/developers/gitignore?templates=windows,macos,linux,android,xcode,web,flutter,dart 編輯
+
+### Android ###
+# Gradle 檔案
+.gradle/
+build/
+
+# 本地設定檔（sdk 路徑等）
+local.properties
+
+# 日誌／作業系統檔案
+*.log
+
+# Android Studio 產生的檔案與資料夾
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+output.json
+
+# IntelliJ
+*.iml
+.idea/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# 金鑰庫檔案
+*.jks
+*.keystore
+
+# Google 服務（例如 API 或 Firebase）
+google-services.json
+
+# Android 效能剖析
+*.hprof
+
+### Android Patch ###
+gen-external-apklibs
+
+# 取代 Android Studio 3.5 引入的 .externalNativeBuild 目錄。
+
+### Dart ###
+# 參閱 https://www.dartlang.org/guides/libraries/private-files
+
+# 由 pub 建立的檔案與目錄
+.dart_tool/
+.packages
+# 若正在建置應用程式，您可能希望將 pubspec.lock 納入版本控制
+pubspec.lock
+
+# 由 dartdoc 建立的目錄
+# 若未在本機產生文件，可以移除此行。
+doc/api/
+
+# dotenv 環境變數檔案
+.env*
+
+# 避免提交產生的 JavaScript 檔案：
+*.dart.js
+*.info.json      # 由 --dump-info 旗標產生。
+*.js             # 由 dart2js 產生時。若專案包含以 JavaScript
+                 # 撰寫的原始檔，請勿指定 *.js。
+*.js_
+*.js.deps
+*.js.map
+
+.flutter-plugins
+.flutter-plugins-dependencies
+
+### Dart Patch ###
+# dotenv 環境變數檔案
+.env
+
+### Flutter ###
+# Flutter／Dart／Pub 相關
+**/doc/api/
+.fvm/flutter_sdk
+.pub-cache/
+.pub/
+coverage/
+# 對於函式庫套件，請勿提交 pubspec.lock 檔案。
+# 重新產生 pubspec.lock 檔案可讓您針對相依套件的最新相容版本進行測試。
+# 參閱 https://dart.dev/guides/libraries/private-files#pubspeclock
+#pubspec.lock
+
+# Android 相關
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/key.properties
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+
+# iOS／XCode 相關
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# 上述規則的例外情況。
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+### Linux ###
+*~
+
+# 當程序仍持有已刪除檔案的開啟控制代碼時可能產生的暫存檔
+.fuse_hidden*
+
+# KDE 目錄偏好設定
+.directory
+
+# Linux 垃圾桶資料夾，可能出現在任何分割區或磁碟上
+.Trash-*
+
+# 當開啟的檔案被移除但仍被存取時會建立 .nfs 檔案
+.nfs*
+
+### macOS ###
+# 一般
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon 必須以兩個 \r 結尾
+Icon
+
+
+# 縮圖
+._*
+
+# 可能出現在磁碟區根目錄的檔案
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# 遠端 AFP 共享上可能建立的目錄
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud 產生的檔案
+*.icloud
+
+### Web ###
+*.asp
+*.cer
+*.csr
+*.css
+*.htm
+*.html
+*.js
+*.jsp
+*.php
+*.rss
+*.wasm
+*.wat
+*.xhtml
+
+### Windows ###
+# Windows 縮圖快取檔案
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# 傾印檔案
+*.stackdump
+
+# 資料夾設定檔
+[Dd]esktop.ini
+
+# 用於檔案共享的資源回收筒
+$RECYCLE.BIN/
+
+# Windows 安裝程式檔案
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows 捷徑
+*.lnk
+
+### Xcode ###
+## 使用者設定
+xcuserdata/
+
+## Xcode 8 及更早版本
+*.xcscmblueprint
+*.xccheckout
+
+### Xcode Patch ###
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# 結束 https://www.toptal.com/developers/gitignore/api/windows,macos,linux,android,xcode,web,flutter,dart
+
+### 圖示圖片 ###
+# 忽略平台目錄中產生的圖示／啟動器圖片檔案
+android/**/*[Ii]con*.png
+android/**/ic_launcher*.png
+android/**/launch_background.png
+ios/**/*[Ii]con*.png
+ios/**/LaunchImage*.png
+macos/**/*[Ii]con*.png
+macos/**/*[Ii]con*.icns
+web/**/*[Ii]con*.png
+windows/**/*[Ii]con*.png
+windows/**/*[Ii]con*.ico
+ico/backup
+### 圖示圖片結束 ###
+/AGENTS*
+.playwright-mcp
+app_localizations*.dart
+api-doc/network_log.txt
+debug*.png
+web_fonts_cache
+*.otf
+*.ttf
+*.zip
+*.xz
+*.7z
+/bin
+

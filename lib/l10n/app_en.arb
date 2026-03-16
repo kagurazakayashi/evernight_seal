@@ -1,0 +1,27 @@
+{
+  "@@locale": "en",
+  "appTitle": "EvernightSeal",
+  "appSubtitle": "Self-Signed Certificate Generator",
+  "@appSubtitle": {
+    "description": "Subtitle shown below the app name on home screen"
+  },
+  "generateButton": "Generate Certificate",
+  "settingsTitle": "Settings",
+  "aboutTitle": "About",
+  "license": "License",
+  "privacy": "Privacy",
+  "menuViewCert": "View Certificate",
+  "menuViewCertDesc": "Inspect certificate details, validity and chain",
+  "menuCreateKey": "Create Private Key",
+  "menuCreateKeyDesc": "Generate RSA or EC private key for CA or end entity",
+  "menuSelfCA": "Self-Signed CA",
+  "menuSelfCADesc": "Create a self-signed root CA certificate",
+  "menuCreateCSR": "Create CSR",
+  "menuCreateCSRDesc": "Generate a Certificate Signing Request",
+  "menuIssueCert": "Issue Certificate",
+  "menuIssueCertDesc": "Sign a CSR with a CA certificate",
+  "menuExport": "Export",
+  "menuExportDesc": "Export certificates and keys to PEM, DER or PFX",
+  "menuKeyManager": "Key Manager",
+  "menuKeyManagerDesc": "Browse and manage generated key pairs"
+}

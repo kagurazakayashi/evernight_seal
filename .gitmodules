@@ -1,0 +1,3 @@
+[submodule "flutter-build-all"]
+	path = flutter-build-all
+	url = git@github.com:kagurazakayashi/flutter-build-all.git

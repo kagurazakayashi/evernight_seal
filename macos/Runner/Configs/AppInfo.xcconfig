@@ -1,0 +1,13 @@
+// Runner 目標的應用程式層級設定。
+//
+// 未來可能會替換為從中繼資料（例如 pubspec.yaml）自動產生的內容。
+// 若未替換，當此檔案成為 `flutter create` 模板後，以下數值將預設使用專案名稱。
+
+// 應用程式名稱。預設情況下，這也是 Flutter 視窗的標題。
+PRODUCT_NAME = evernight_seal
+
+// 應用程式的套件識別碼
+PRODUCT_BUNDLE_IDENTIFIER = moe.yashi.evernightSeal
+
+// 顯示於應用程式資訊中的版權
+PRODUCT_COPYRIGHT = Copyright © 2026 moe.yashi. All rights reserved.

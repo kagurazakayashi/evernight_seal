@@ -1,0 +1,27 @@
+# 本檔案設定分析器（analyzer），用於靜態分析 Dart 程式碼，
+# 檢查錯誤、警告與 lint 規則。
+#
+# 分析器發現的問題會顯示在支援 Dart 的 IDE 介面中
+# （https://dart.dev/tools#ides-and-editors）。分析器也可透過
+# 命令列執行 `flutter analyze` 來呼叫。
+
+# 以下這一行會啟用一組針對 Flutter 應用程式、套件與外掛程式
+# 所推薦的 lint 規則，旨在鼓勵良好的程式撰寫習慣。
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  # 本專案套用的 lint 規則可在下方區段中自訂，
+  # 以停用上方引入之 `package:flutter_lints/flutter.yaml` 中的規則，
+  # 或啟用額外的規則。所有可用 lint 規則的完整清單
+  # 及其文件發佈於 https://dart.dev/lints。
+  #
+  # 除了在下方區段中針對整個專案停用某條 lint 規則外，
+  # 也可以針對單行程式碼或特定 dart 檔案，在產生該 lint 的
+  # 該行或檔案中使用 `// ignore: name_of_lint` 和
+  # `// ignore_for_file: name_of_lint` 語法來抑制。
+  rules:
+    # avoid_print: false  # 取消註解以停用 `avoid_print` 規則
+    # prefer_single_quotes: true  # 取消註解以啟用 `prefer_single_quotes` 規則
+
+# 關於本檔案的更多資訊，請參閱
+# https://dart.dev/guides/language/analysis-options

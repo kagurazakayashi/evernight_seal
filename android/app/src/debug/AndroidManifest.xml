@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 開發期間需要 INTERNET 權限。具體而言，
+         Flutter 工具需要此權限與正在執行的應用程式通訊，
+         以便設定中斷點、提供熱重載等功能。
+    -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+</manifest>
