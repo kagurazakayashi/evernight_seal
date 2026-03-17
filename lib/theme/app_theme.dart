@@ -4,15 +4,11 @@ import 'app_colors.dart';
 
 /// 長夜印信 - 紅客主題
 ///
-/// 基礎配色由 Material 3 `ColorScheme.fromSeed(seedColor: Colors.red)`
-/// 自動生成，與 evernight_board 採用一致的配色體系。
-/// 自訂細節（輝光、邊框、monospace 字體等）在此基礎上疊加。
+/// 基礎配色由 Material 3 `ColorScheme.fromSeed(seedColor: Colors.red)` 自動生成。
 class AppTheme {
   AppTheme._();
 
-  /// 主深色主題
   static ThemeData get darkTheme {
-    // 從紅色種子色自動生成完整 Material 3 配色方案
     final colorScheme = ColorScheme.fromSeed(
       seedColor: Colors.red,
       brightness: Brightness.dark,
@@ -34,6 +30,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           letterSpacing: 2.0,
           fontFamily: 'monospace',
+          decoration: TextDecoration.none,
         ),
       ),
       cardTheme: CardThemeData(
@@ -47,91 +44,35 @@ class AppTheme {
         ),
       ),
       textTheme: TextTheme(
-        headlineLarge: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 3.0,
-        ),
-        headlineMedium: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 2.0,
-        ),
-        titleLarge: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 1.0,
-        ),
-        titleMedium: TextStyle(
-          color: colorScheme.onSurfaceVariant,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-        ),
-        bodyLarge: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 16,
-        ),
-        bodyMedium: TextStyle(
-          color: colorScheme.onSurfaceVariant,
-          fontSize: 13,
-        ),
-        labelLarge: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 1.5,
-        ),
+        headlineLarge: TextStyle(color: colorScheme.onSurface, fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 3.0, decoration: TextDecoration.none),
+        headlineMedium: TextStyle(color: colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.w600, letterSpacing: 2.0, decoration: TextDecoration.none),
+        titleLarge: TextStyle(color: colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.w500, letterSpacing: 1.0, decoration: TextDecoration.none),
+        titleMedium: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none),
+        bodyLarge: TextStyle(color: colorScheme.onSurface, fontSize: 16, decoration: TextDecoration.none),
+        bodyMedium: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13, decoration: TextDecoration.none),
+        labelLarge: TextStyle(color: colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 1.5, decoration: TextDecoration.none),
       ),
-      iconTheme: IconThemeData(
-        color: colorScheme.onSurfaceVariant,
-        size: 24,
-      ),
-      dividerTheme: DividerThemeData(
-        color: colorScheme.outline.withValues(alpha: 0.4),
-        thickness: 0.5,
-      ),
+      iconTheme: IconThemeData(color: colorScheme.onSurfaceVariant, size: 24),
+      dividerTheme: DividerThemeData(color: colorScheme.outline.withValues(alpha: 0.4), thickness: 0.5),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.background,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: colorScheme.outline.withValues(alpha: 0.5), width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: colorScheme.outline.withValues(alpha: 0.5), width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
-        ),
-        labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide(color: colorScheme.outline.withValues(alpha: 0.5), width: 1)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide(color: colorScheme.outline.withValues(alpha: 0.5), width: 1)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide(color: colorScheme.primary, width: 1.5)),
+        labelStyle: TextStyle(color: colorScheme.onSurfaceVariant, decoration: TextDecoration.none),
+        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5), decoration: TextDecoration.none),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        elevation: 4,
-      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: colorScheme.primary, foregroundColor: colorScheme.onPrimary, elevation: 4),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-            side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.6), width: 1),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1.5,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4), side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.6), width: 1)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 1.5, decoration: TextDecoration.none),
         ),
       ),
     );
