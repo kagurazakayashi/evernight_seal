@@ -71,5 +71,14 @@
   "certViewDetails": "Details",
   "certViewNoExtensions": "No extensions",
   "certViewNoSAN": "None",
-  "certViewSerialHex": "Serial (Hex)"
+  "certViewSerialHex": "Serial (Hex)",
+  "certViewPasswordTitle": "Password Required",
+  "certViewPasswordMessage": "This file is protected with a password. Please enter the password to continue.",
+  "certViewPasswordCancel": "Cancel",
+  "certViewPasswordConfirm": "OK",
+  "certViewPrivateKey": "Private Key",
+  "certViewPrivateKeyType": "Key Type",
+  "certViewPrivateKeySize": "Key Size",
+  "certViewEncrypted": "Encrypted",
+  "certViewKeyDetected": "Private key detected"
 }

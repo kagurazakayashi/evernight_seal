@@ -19,12 +19,11 @@ class CertViewScreen extends StatefulWidget {
 
 class _CertViewScreenState extends State<CertViewScreen> {
   final TextEditingController _pemController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   CertParseResult? _result;
+  PrivateKeyInfo? _privateKey;
   String? _errorMessage;
   bool _isLoading = false;
-  bool _needsPassword = false;
   String? _loadedFileName;
   Uint8List? _rawFileBytes;
   bool _showPasteArea = false;
@@ -35,7 +34,6 @@ class _CertViewScreenState extends State<CertViewScreen> {
   @override
   void dispose() {
     _pemController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
@@ -54,14 +52,18 @@ class _CertViewScreenState extends State<CertViewScreen> {
 
     try {
       final result = CertificateService.parsePemText(text);
+      final pk = _tryParsePrivateKey(text);
       setState(() {
         _result = result.isSuccess ? result : null;
-        _errorMessage = result.errorMessage;
+        // 若有私鑰但無證書，不顯示證書解析錯誤
+        _errorMessage = (pk != null && !result.isSuccess)
+            ? null
+            : result.errorMessage;
         _isLoading = false;
-        _needsPassword = false;
         _loadedFileName = null;
         _rawFileBytes = null;
         _expandedIndices.clear();
+        _privateKey = pk;
       });
     } catch (e) {
       setState(() {
@@ -121,50 +123,36 @@ class _CertViewScreenState extends State<CertViewScreen> {
   void _parseFileBytes(Uint8List bytes, String fileName) {
     final ext = fileName.toLowerCase();
 
-    // 檢查是否為 PFX/P12
+    // 檢查是否為 PFX/P12 → 直接彈出密碼對話框
     if (ext.endsWith('.pfx') || ext.endsWith('.p12')) {
-      debugPrint('[CertViewScreen] 偵測到 PFX/P12 格式，需要密碼');
-      setState(() {
-        _needsPassword = true;
-        _isLoading = false;
+      debugPrint('[CertViewScreen] 偵測到 PFX/P12 格式，彈出密碼對話框');
+      setState(() => _isLoading = false);
+      _showPasswordDialog((password) {
+        _parsePfxWithPassword(password);
       });
       return;
     }
+
+    // 先嘗試作為 PEM 文字解析
+    try {
+      final text = utf8.decode(bytes);
+      if (CertificateService.isPrivateKeyEncrypted(text)) {
+        debugPrint('[CertViewScreen] 偵測到加密私鑰，彈出密碼對話框');
+        setState(() => _isLoading = false);
+        _showPasswordDialog((password) {
+          _parseEncryptedPemBytes(bytes, password);
+        });
+        return;
+      }
+    } catch (_) {}
 
     // 嘗試自動解析
     final parseResult = CertificateService.autoParse(bytes);
-
-    if (parseResult.errorMessage != null &&
-        parseResult.errorMessage!.contains('password')) {
-      // 可能需要密碼
-      setState(() {
-        _needsPassword = true;
-        _isLoading = false;
-      });
-      return;
-    }
-
-    setState(() {
-      _result = parseResult.isSuccess ? parseResult : null;
-      _errorMessage = parseResult.errorMessage;
-      _isLoading = false;
-      _needsPassword = false;
-      _expandedIndices.clear();
-
-      // 若為 PEM 文字，填入文字框
-      if (parseResult.sourceType == 'pem' ||
-          parseResult.sourceType == 'pkcs7') {
-        try {
-          _pemController.text = utf8.decode(bytes);
-        } catch (_) {}
-      }
-    });
+    _finishParsing(parseResult, bytes);
   }
 
-  void _parsePfxWithPassword() {
+  void _parsePfxWithPassword(String password) {
     if (_rawFileBytes == null) return;
-
-    final password = _passwordController.text;
     final effectivePassword = password.isEmpty ? null : password;
 
     debugPrint(
@@ -182,20 +170,127 @@ class _CertViewScreenState extends State<CertViewScreen> {
       _result = result.isSuccess ? result : null;
       _errorMessage = result.errorMessage;
       _isLoading = false;
-      _needsPassword = false;
       _expandedIndices.clear();
+      _privateKey = null;
     });
+  }
+
+  void _parseEncryptedPemBytes(Uint8List bytes, String password) {
+    // 對於加密的 PEM，嘗試以 PFX 方式處理，或直接嘗試解析證書部分
+    debugPrint('[CertViewScreen] 嘗試解析加密 PEM');
+    setState(() => _isLoading = true);
+
+    final parseResult = CertificateService.autoParse(bytes, password: password);
+    _finishParsing(parseResult, bytes);
+  }
+
+  void _finishParsing(CertParseResult parseResult, Uint8List bytes) {
+    // 嘗試解析私鑰
+    PrivateKeyInfo? pk;
+    try {
+      final text = utf8.decode(bytes);
+      if (parseResult.sourceType == 'pem' ||
+          parseResult.sourceType == 'pkcs7' ||
+          parseResult.sourceType == 'pfx') {
+        _pemController.text = text;
+      }
+      pk = _tryParsePrivateKey(text);
+    } catch (_) {}
+
+    setState(() {
+      _result = parseResult.isSuccess ? parseResult : null;
+      _errorMessage = (pk != null && !parseResult.isSuccess)
+          ? null
+          : parseResult.errorMessage;
+      _isLoading = false;
+      _expandedIndices.clear();
+      _privateKey = pk;
+    });
+  }
+
+  /// 彈出密碼輸入對話框
+  void _showPasswordDialog(void Function(String password) onSubmit) {
+    final controller = TextEditingController();
+    showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx);
+        return AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Text(
+            l10n.certViewPasswordTitle,
+            style: const TextStyle(color: AppColors.textPrimary),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.certViewPasswordMessage,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                obscureText: true,
+                autofocus: true,
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: l10n.certViewPassword,
+                  hintStyle: const TextStyle(color: AppColors.textHint),
+                ),
+                onSubmitted: (value) {
+                  Navigator.of(ctx).pop(value);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                l10n.certViewPasswordCancel,
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(controller.text),
+              child: Text(
+                l10n.certViewPasswordConfirm,
+                style: const TextStyle(color: AppColors.primary),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((password) {
+      controller.dispose();
+      if (password != null) {
+        onSubmit(password);
+      }
+    });
+  }
+
+  /// 嘗試從 PEM 文字中解析私鑰資訊
+  PrivateKeyInfo? _tryParsePrivateKey(String pemText) {
+    if (!CertificateService.hasPrivateKeyPem(pemText)) return null;
+    final blocks = CertificateService.extractPrivateKeyBlocks(pemText);
+    if (blocks.isEmpty) return null;
+    debugPrint('[CertViewScreen] 偵測到私鑰，嘗試解析');
+    return CertificateService.parsePrivateKeyPem(blocks.first);
   }
 
   void _clearAll() {
     debugPrint('[CertViewScreen] 清除所有資料');
     setState(() {
       _pemController.clear();
-      _passwordController.clear();
       _result = null;
+      _privateKey = null;
       _errorMessage = null;
       _isLoading = false;
-      _needsPassword = false;
       _loadedFileName = null;
       _rawFileBytes = null;
       _showPasteArea = false;
@@ -228,19 +323,105 @@ class _CertViewScreenState extends State<CertViewScreen> {
         child: Column(
           children: [
             _buildInputSection(l10n),
-            if (_needsPassword) _buildPasswordSection(l10n),
-            if (_errorMessage != null) _buildErrorBanner(l10n),
-            if (_isLoading)
-              const Expanded(
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_result != null && _result!.certificates.isNotEmpty)
-              Expanded(child: _buildChainView(l10n))
-            else
-              Expanded(child: _buildEmptyState(l10n)),
+            Expanded(
+              child: _buildBodyContent(l10n),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBodyContent(AppLocalizations l10n) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_result == null || _result!.certificates.isEmpty) {
+      // 僅有私鑰或完全無內容
+      if (_privateKey != null) {
+        return ListView(
+          children: [
+            if (_errorMessage != null) _buildErrorBanner(l10n),
+            _buildPrivateKeyCard(l10n),
+          ],
+        );
+      }
+      if (_errorMessage != null) {
+        return ListView(
+          children: [_buildErrorBanner(l10n), _buildEmptyState(l10n)],
+        );
+      }
+      return _buildEmptyState(l10n);
+    }
+
+    // 有證書鏈，將錯誤提示和私鑰卡也放入可滾動區域
+    return ListView(
+      children: [
+        if (_errorMessage != null) _buildErrorBanner(l10n),
+        if (_privateKey != null) _buildPrivateKeyCard(l10n),
+        _buildChainViewInline(l10n),
+      ],
+    );
+  }
+
+  /// 內聯版憑證鏈（用於 ListView 內，不使用 Expanded）
+  Widget _buildChainViewInline(AppLocalizations l10n) {
+    final certs = _result!.certificates;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 憑證鏈標題
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Row(
+            children: [
+              Icon(Icons.account_tree_outlined, size: 18, color: AppColors.accent),
+              const SizedBox(width: 8),
+              Text(
+                l10n.certViewChain,
+                style: const TextStyle(
+                  color: AppColors.accent,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${certs.length} cert(s)',
+                style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+        // 憑證列表（shrinkWrap + 禁止自身滾動，由外層 ListView 統一滾動）
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          itemCount: certs.length,
+          itemBuilder: (context, index) {
+            return _CertChainTile(
+              cert: certs[index],
+              index: index,
+              totalCount: certs.length,
+              isExpanded: _expandedIndices.contains(index),
+              onToggle: () {
+                setState(() {
+                  if (_expandedIndices.contains(index)) {
+                    _expandedIndices.remove(index);
+                  } else {
+                    _expandedIndices.add(index);
+                  }
+                });
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -324,45 +505,71 @@ class _CertViewScreenState extends State<CertViewScreen> {
     );
   }
 
-  Widget _buildPasswordSection(AppLocalizations l10n) {
+  Widget _buildPrivateKeyCard(AppLocalizations l10n) {
+    final pk = _privateKey!;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Row(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: AppColors.warning.withValues(alpha: 0.5),
+          width: 0.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: TextField(
-              controller: _passwordController,
-              obscureText: true,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-              ),
-              decoration: InputDecoration(
-                hintText: l10n.certViewPasswordHint,
-                hintStyle: const TextStyle(
-                  color: AppColors.textHint,
-                  fontSize: 12,
-                ),
-                labelText: l10n.certViewPassword,
-                prefixIcon: const Icon(
-                  Icons.lock_outline,
-                  size: 20,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+          Row(
+            children: [
+              const Icon(Icons.vpn_key_outlined, size: 16, color: AppColors.warning),
+              const SizedBox(width: 8),
+              Text(
+                l10n.certViewPrivateKey,
+                style: const TextStyle(
+                  color: AppColors.warning,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              onSubmitted: (_) => _parsePfxWithPassword(),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (pk.isEncrypted) ...[
+            Row(
+              children: [
+                const Icon(Icons.lock_outline, size: 14, color: AppColors.textHint),
+                const SizedBox(width: 4),
+                Text(
+                  l10n.certViewEncrypted,
+                  style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 8),
-          _ActionButton(
-            icon: Icons.vpn_key_outlined,
-            label: l10n.certViewParse,
-            primary: true,
-            onPressed: _parsePfxWithPassword,
-          ),
+          ] else ...[
+            _DetailRow(label: l10n.certViewPrivateKeyType, value: pk.algorithm),
+            if (pk.keySize != null) ...[
+              const SizedBox(height: 4),
+              _DetailRow(label: l10n.certViewPrivateKeySize, value: '${pk.keySize} bits'),
+            ],
+            if (pk.curveName != null) ...[
+              const SizedBox(height: 4),
+              _DetailRow(label: l10n.certViewCurve, value: pk.curveName!),
+            ],
+            if (pk.modulusHex != null) ...[
+              const SizedBox(height: 4),
+              _DetailRow(
+                label: l10n.certViewModulus,
+                value: _fmtHex(pk.modulusHex!),
+                mono: true,
+              ),
+            ],
+            if (pk.publicExponent != null) ...[
+              const SizedBox(height: 4),
+              _DetailRow(label: l10n.certViewExponent, value: pk.publicExponent.toString()),
+            ],
+          ],
         ],
       ),
     );
@@ -429,72 +636,6 @@ class _CertViewScreenState extends State<CertViewScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildChainView(AppLocalizations l10n) {
-    final certs = _result!.certificates;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 憑證鏈標題
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: Row(
-            children: [
-              Icon(
-                Icons.account_tree_outlined,
-                size: 18,
-                color: AppColors.accent,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                l10n.certViewChain,
-                style: const TextStyle(
-                  color: AppColors.accent,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                '${certs.length} cert(s)',
-                style: const TextStyle(
-                  color: AppColors.textHint,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // 憑證列表
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            itemCount: certs.length,
-            itemBuilder: (context, index) {
-              return _CertChainTile(
-                cert: certs[index],
-                index: index,
-                totalCount: certs.length,
-                isExpanded: _expandedIndices.contains(index),
-                onToggle: () {
-                  setState(() {
-                    if (_expandedIndices.contains(index)) {
-                      _expandedIndices.remove(index);
-                    } else {
-                      _expandedIndices.add(index);
-                    }
-                  });
-                },
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }
@@ -1385,21 +1526,25 @@ class _CertDetailCard extends StatelessWidget {
   }
 
   String _formatHex(String hex) {
-    // 插入空格使十六進位字串更易讀
-    if (hex.length <= 16) return hex;
-    final buf = StringBuffer();
-    for (var i = 0; i < hex.length; i += 2) {
-      if (i > 0) {
-        buf.write(i % 16 == 0 ? '\n' : ' ');
-      }
-      if (i + 2 <= hex.length) {
-        buf.write(hex.substring(i, i + 2));
-      } else {
-        buf.write(hex.substring(i));
-      }
-    }
-    return buf.toString();
+    return _fmtHex(hex);
   }
+}
+
+/// 格式化十六進位字串（插入空格分組）
+String _fmtHex(String hex) {
+  if (hex.length <= 16) return hex;
+  final buf = StringBuffer();
+  for (var i = 0; i < hex.length; i += 2) {
+    if (i > 0) {
+      buf.write(i % 16 == 0 ? '\n' : ' ');
+    }
+    if (i + 2 <= hex.length) {
+      buf.write(hex.substring(i, i + 2));
+    } else {
+      buf.write(hex.substring(i));
+    }
+  }
+  return buf.toString();
 }
 
 // ============================================================

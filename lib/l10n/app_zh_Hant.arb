@@ -68,5 +68,14 @@
   "certViewDetails": "詳細資訊",
   "certViewNoExtensions": "無擴展",
   "certViewNoSAN": "無",
-  "certViewSerialHex": "序號 (Hex)"
+  "certViewSerialHex": "序號 (Hex)",
+  "certViewPasswordTitle": "需要密碼",
+  "certViewPasswordMessage": "此檔案受密碼保護，請輸入密碼以繼續。",
+  "certViewPasswordCancel": "取消",
+  "certViewPasswordConfirm": "確定",
+  "certViewPrivateKey": "私鑰",
+  "certViewPrivateKeyType": "金鑰類型",
+  "certViewPrivateKeySize": "金鑰長度",
+  "certViewEncrypted": "已加密",
+  "certViewKeyDetected": "偵測到私鑰"
 }

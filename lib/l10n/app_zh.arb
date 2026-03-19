@@ -68,5 +68,14 @@
   "certViewDetails": "详细信息",
   "certViewNoExtensions": "无扩展",
   "certViewNoSAN": "无",
-  "certViewSerialHex": "序列号 (Hex)"
+  "certViewSerialHex": "序列号 (Hex)",
+  "certViewPasswordTitle": "需要密码",
+  "certViewPasswordMessage": "此文件受密码保护，请输入密码以继续。",
+  "certViewPasswordCancel": "取消",
+  "certViewPasswordConfirm": "确定",
+  "certViewPrivateKey": "私钥",
+  "certViewPrivateKeyType": "密钥类型",
+  "certViewPrivateKeySize": "密钥长度",
+  "certViewEncrypted": "已加密",
+  "certViewKeyDetected": "检测到私钥"
 }

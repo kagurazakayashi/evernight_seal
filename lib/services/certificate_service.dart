@@ -27,6 +27,44 @@ class CertParseResult {
   bool get isSuccess => errorMessage == null && certificates.isNotEmpty;
 }
 
+/// 私鑰資訊
+class PrivateKeyInfo {
+  /// 金鑰演算法：RSA / ECC
+  final String algorithm;
+
+  /// 金鑰大小（位元）
+  final int? keySize;
+
+  /// 曲線名稱（僅 ECC）
+  final String? curveName;
+
+  /// 模數（僅 RSA，十六進位字串）
+  final String? modulusHex;
+
+  /// 公開指數（僅 RSA）
+  final int? publicExponent;
+
+  /// SHA-256 指紋
+  final String? sha256Thumbprint;
+
+  /// 私鑰 PEM 原文
+  final String? pemText;
+
+  /// 是否已加密
+  final bool isEncrypted;
+
+  const PrivateKeyInfo({
+    required this.algorithm,
+    this.keySize,
+    this.curveName,
+    this.modulusHex,
+    this.publicExponent,
+    this.sha256Thumbprint,
+    this.pemText,
+    this.isEncrypted = false,
+  });
+}
+
 /// 憑證服務層 - 封裝 basic_utils 的憑證解析功能
 class CertificateService {
   /// 從 PEM 文字解析憑證（支援單一憑證、多個 PEM 區塊、PKCS#7）
@@ -420,5 +458,109 @@ class CertificateService {
       buf.write(s.substring(i, i + size > s.length ? s.length : i + size));
     }
     return buf.toString();
+  }
+
+  // ---- 私鑰解析 ----
+
+  /// 私鑰 PEM 標頭
+  static const _privateKeyHeaders = [
+    '-----BEGIN PRIVATE KEY-----',
+    '-----BEGIN RSA PRIVATE KEY-----',
+    '-----BEGIN EC PRIVATE KEY-----',
+    '-----BEGIN ENCRYPTED PRIVATE KEY-----',
+  ];
+
+  /// 檢查 PEM 文字是否包含私鑰
+  static bool hasPrivateKeyPem(String pemText) {
+    return _privateKeyHeaders.any((h) => pemText.contains(h));
+  }
+
+  /// 檢查 PEM 私鑰是否已加密
+  static bool isPrivateKeyEncrypted(String pemText) {
+    return pemText.contains('ENCRYPTED') ||
+           pemText.contains('ENCRYPTED PRIVATE KEY');
+  }
+
+  /// 從 PEM 文字中提取私鑰區塊
+  static List<String> extractPrivateKeyBlocks(String pemText) {
+    final blocks = <String>[];
+    for (final begin in _privateKeyHeaders) {
+      final end = begin.replaceAll('BEGIN', 'END');
+      int start = 0;
+      while (true) {
+        final beginIdx = pemText.indexOf(begin, start);
+        if (beginIdx == -1) break;
+        final endIdx = pemText.indexOf(end, beginIdx);
+        if (endIdx == -1) break;
+        blocks.add(pemText.substring(beginIdx, endIdx + end.length));
+        start = endIdx + end.length;
+      }
+    }
+    return blocks;
+  }
+
+  /// 根據橢圓曲線名稱推估金鑰大小
+  static int? _ecCurveBitLength(String? curveName) {
+    if (curveName == null) return null;
+    final m = {
+      'secp256r1': 256, 'prime256v1': 256,
+      'secp384r1': 384,
+      'secp521r1': 521,
+      'secp256k1': 256,
+      'secp224r1': 224, 'secp224k1': 224,
+      'secp192r1': 192, 'secp192k1': 192,
+      'secp160r1': 160, 'secp160k1': 160,
+      'secp128r1': 128,
+      'secp112r1': 112,
+      'brainpoolp256r1': 256, 'brainpoolp256t1': 256,
+      'brainpoolp384r1': 384, 'brainpoolp384t1': 384,
+      'brainpoolp512r1': 512, 'brainpoolp512t1': 512,
+    };
+    return m[curveName];
+  }
+
+  /// 解析未加密的私鑰 PEM
+  static PrivateKeyInfo? parsePrivateKeyPem(String pem) {
+    if (isPrivateKeyEncrypted(pem)) {
+      return PrivateKeyInfo(
+        algorithm: 'Unknown',
+        isEncrypted: true,
+        pemText: pem,
+      );
+    }
+
+    try {
+      final keyType = CryptoUtils.getPrivateKeyType(pem);
+
+      if (keyType == 'RSA' || keyType == 'RSA_PKCS1') {
+        final rsaKey = keyType == 'RSA_PKCS1'
+            ? CryptoUtils.rsaPrivateKeyFromPemPkcs1(pem)
+            : CryptoUtils.rsaPrivateKeyFromPem(pem);
+        final keySize = rsaKey.n?.bitLength;
+
+        return PrivateKeyInfo(
+          algorithm: 'RSA',
+          keySize: keySize,
+          modulusHex: rsaKey.n?.toRadixString(16).toUpperCase(),
+          publicExponent: 65537,
+          pemText: pem,
+        );
+      } else if (keyType == 'ECC') {
+        final ecKey = CryptoUtils.ecPrivateKeyFromPem(pem);
+        return PrivateKeyInfo(
+          algorithm: 'EC',
+          keySize: _ecCurveBitLength(ecKey.parameters?.domainName),
+          curveName: ecKey.parameters?.domainName,
+          pemText: pem,
+        );
+      }
+    } catch (e) {
+      return PrivateKeyInfo(
+        algorithm: 'Unknown',
+        pemText: pem,
+        isEncrypted: isPrivateKeyEncrypted(pem),
+      );
+    }
+    return null;
   }
 }

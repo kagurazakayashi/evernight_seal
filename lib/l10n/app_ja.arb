@@ -68,5 +68,14 @@
   "certViewDetails": "詳細",
   "certViewNoExtensions": "拡張なし",
   "certViewNoSAN": "なし",
-  "certViewSerialHex": "シリアル番号 (Hex)"
+  "certViewSerialHex": "シリアル番号 (Hex)",
+  "certViewPasswordTitle": "パスワードが必要",
+  "certViewPasswordMessage": "このファイルはパスワードで保護されています。続行するにはパスワードを入力してください。",
+  "certViewPasswordCancel": "キャンセル",
+  "certViewPasswordConfirm": "OK",
+  "certViewPrivateKey": "秘密鍵",
+  "certViewPrivateKeyType": "鍵タイプ",
+  "certViewPrivateKeySize": "鍵長",
+  "certViewEncrypted": "暗号化済み",
+  "certViewKeyDetected": "秘密鍵が検出されました"
 }
