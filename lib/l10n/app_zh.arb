@@ -77,5 +77,15 @@
   "certViewPrivateKeyType": "密钥类型",
   "certViewPrivateKeySize": "密钥长度",
   "certViewEncrypted": "已加密",
-  "certViewKeyDetected": "检测到私钥"
+  "certViewKeyDetected": "检测到私钥",
+
+  "createKeyGenerate": "生成密钥",
+  "createKeySave": "保存密钥",
+  "createKeyNoKey": "尚未生成密钥，请配置选项后点击生成。",
+  "createKeyPublicKey": "公钥",
+  "createKeyFormat": "密钥格式",
+  "createKeyFormatPkcs8": "PKCS#8",
+  "createKeyFormatPkcs1": "PKCS#1",
+  "createKeyFormatSec1": "SEC 1",
+  "createKeySelectCurve": "选择曲线"
 }

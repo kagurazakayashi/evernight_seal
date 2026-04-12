@@ -77,5 +77,15 @@
   "certViewPrivateKeyType": "金鑰類型",
   "certViewPrivateKeySize": "金鑰長度",
   "certViewEncrypted": "已加密",
-  "certViewKeyDetected": "偵測到私鑰"
+  "certViewKeyDetected": "偵測到私鑰",
+
+  "createKeyGenerate": "產生金鑰",
+  "createKeySave": "儲存金鑰",
+  "createKeyNoKey": "尚未產生金鑰，請配置選項後點擊產生。",
+  "createKeyPublicKey": "公開金鑰",
+  "createKeyFormat": "金鑰格式",
+  "createKeyFormatPkcs8": "PKCS#8",
+  "createKeyFormatPkcs1": "PKCS#1",
+  "createKeyFormatSec1": "SEC 1",
+  "createKeySelectCurve": "選擇曲線"
 }

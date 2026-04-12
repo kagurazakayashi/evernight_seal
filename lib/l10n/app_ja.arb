@@ -77,5 +77,15 @@
   "certViewPrivateKeyType": "鍵タイプ",
   "certViewPrivateKeySize": "鍵長",
   "certViewEncrypted": "暗号化済み",
-  "certViewKeyDetected": "秘密鍵が検出されました"
+  "certViewKeyDetected": "秘密鍵が検出されました",
+
+  "createKeyGenerate": "鍵を生成",
+  "createKeySave": "鍵を保存",
+  "createKeyNoKey": "鍵はまだ生成されていません。オプションを設定して生成を押してください。",
+  "createKeyPublicKey": "公開鍵",
+  "createKeyFormat": "鍵形式",
+  "createKeyFormatPkcs8": "PKCS#8",
+  "createKeyFormatPkcs1": "PKCS#1",
+  "createKeyFormatSec1": "SEC 1",
+  "createKeySelectCurve": "曲線を選択"
 }

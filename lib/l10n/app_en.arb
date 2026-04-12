@@ -80,5 +80,15 @@
   "certViewPrivateKeyType": "Key Type",
   "certViewPrivateKeySize": "Key Size",
   "certViewEncrypted": "Encrypted",
-  "certViewKeyDetected": "Private key detected"
+  "certViewKeyDetected": "Private key detected",
+
+  "createKeyGenerate": "Generate Key",
+  "createKeySave": "Save Key",
+  "createKeyNoKey": "No key generated yet. Configure options and press Generate.",
+  "createKeyPublicKey": "Public Key",
+  "createKeyFormat": "Key Format",
+  "createKeyFormatPkcs8": "PKCS#8",
+  "createKeyFormatPkcs1": "PKCS#1",
+  "createKeyFormatSec1": "SEC 1",
+  "createKeySelectCurve": "Select Curve"
 }
