@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/key_service.dart';
@@ -25,6 +26,9 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
   int _rsaKeySize = 2048;
   String _ecCurve = 'prime256v1';
 
+  // ── 偏好持久化 ──
+  SharedPreferences? _prefs;
+
   // ── 結果狀態 ──
   KeyGenerationResult? _result;
   String? _errorMessage;
@@ -32,6 +36,42 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
 
   /// 當前選中的金鑰顯示索引（0: 私鑰, 1: 公鑰）
   int _selectedKeyTab = 0;
+
+  static const _prefKeyType = 'createKey_type';
+  static const _prefRsaSize = 'createKey_rsaSize';
+  static const _prefEcCurve = 'createKey_ecCurve';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    _prefs = prefs;
+
+    setState(() {
+      _keyType = prefs.getString(_prefKeyType) ?? 'rsa';
+      _rsaKeySize = prefs.getInt(_prefRsaSize) ?? 2048;
+      _ecCurve = prefs.getString(_prefEcCurve) ?? 'prime256v1';
+    });
+
+    debugPrint(
+      '[CreateKeyScreen] 載入偏好: type=$_keyType, '
+      'rsaSize=$_rsaKeySize, ecCurve=$_ecCurve',
+    );
+  }
+
+  Future<void> _savePreferences() async {
+    await _prefs?.setString(_prefKeyType, _keyType);
+    await _prefs?.setInt(_prefRsaSize, _rsaKeySize);
+    await _prefs?.setString(_prefEcCurve, _ecCurve);
+    debugPrint(
+      '[CreateKeyScreen] 已儲存偏好: type=$_keyType, '
+      'rsaSize=$_rsaKeySize, ecCurve=$_ecCurve',
+    );
+  }
 
   void _generateKey() {
     debugPrint(
@@ -201,6 +241,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
                 onTap: () {
                   debugPrint('[CreateKeyScreen] 選擇演算法: RSA');
                   setState(() => _keyType = 'rsa');
+                  _savePreferences();
                 },
               ),
             ),
@@ -213,6 +254,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
                 onTap: () {
                   debugPrint('[CreateKeyScreen] 選擇演算法: EC');
                   setState(() => _keyType = 'ec');
+                  _savePreferences();
                 },
               ),
             ),
@@ -233,6 +275,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
         onChanged: (v) {
           debugPrint('[CreateKeyScreen] 選擇 RSA 金鑰長度: $v bits');
           setState(() => _rsaKeySize = v);
+          _savePreferences();
         },
       );
     } else {
@@ -247,6 +290,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
         onChanged: (v) {
           debugPrint('[CreateKeyScreen] 選擇 EC 曲線: $v');
           setState(() => _ecCurve = v);
+          _savePreferences();
         },
       );
     }
@@ -521,14 +565,12 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
 class _AlgorithmCard extends StatelessWidget {
   final String label;
   final IconData icon;
-  final String? subtitle;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _AlgorithmCard({
     required this.label,
     required this.icon,
-    this.subtitle,
     required this.isSelected,
     required this.onTap,
   });
@@ -568,16 +610,6 @@ class _AlgorithmCard extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle!,
-                  style: TextStyle(
-                    color: isSelected ? AppColors.primaryLight : AppColors.textHint,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
             ],
           ),
         ),
