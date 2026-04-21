@@ -89,7 +89,7 @@ class _WideSideMenu extends StatelessWidget {
               : _SidebarColumn(items: items, selectedIndex: selectedIndex, onItemSelected: onItemSelected, compact: true, onToggle: onToggle, isOpen: isOpen, onDebugPrint: onDebugPrint),
         ),
         const VerticalDivider(width: 1, color: AppColors.primaryDark),
-        Expanded(child: items[selectedIndex].page),
+        Expanded(child: IndexedStack(index: selectedIndex, children: [for (final item in items) item.page])),
       ],
     );
   }
@@ -164,7 +164,7 @@ class _MobileSideMenu extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          items[selectedIndex].page,
+          IndexedStack(index: selectedIndex, children: [for (final item in items) item.page]),
           Positioned(
             top: MediaQuery.of(context).padding.top + 4, left: 8,
             child: GestureDetector(

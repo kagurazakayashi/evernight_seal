@@ -135,5 +135,6 @@
   "selfCAKeyRequired": "A private key is required to generate the certificate.",
   "selfCAKeyLoaded": "Key loaded",
   "selfCAKeyNotLoaded": "No key loaded",
-  "selfCAKeyClear": "Clear Key"
+  "selfCAKeyClear": "Clear Key",
+  "selfCAUseLastKey": "Use Created Key"
 }

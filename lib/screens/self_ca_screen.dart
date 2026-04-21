@@ -16,7 +16,10 @@ import '../theme/app_colors.dart';
 /// 提供使用者設定主體 DN、金鑰參數、有效期、擴展等選項，
 /// 產生自簽名根 CA 憑證與對應的私鑰。
 class SelfCAScreen extends StatefulWidget {
-  const SelfCAScreen({super.key});
+  /// 從建立私鑰畫面傳遞過來的已產生私鑰 PEM（可為 null）
+  final String? lastGeneratedKeyPem;
+
+  const SelfCAScreen({super.key, this.lastGeneratedKeyPem});
 
   @override
   State<SelfCAScreen> createState() => _SelfCAScreenState();
@@ -52,6 +55,12 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
   String? _detectedKeyType; // 'RSA' or 'EC'
   int? _detectedKeySize;
   String? _detectedCurve;
+
+  /// 建立私鑰畫面是否有已產生的私鑰可用
+  bool get _hasLastGeneratedKey {
+    return widget.lastGeneratedKeyPem != null &&
+        widget.lastGeneratedKeyPem!.isNotEmpty;
+  }
 
   // ── 主體 DN 控制器 ──
   final _cnController = TextEditingController();
@@ -308,6 +317,16 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
     _savePreferences();
   }
 
+  /// 使用剛建立的私鑰（從 HomeScreen 傳遞的值讀取）
+  void _useLastGeneratedKey() {
+    debugPrint('[SelfCAScreen] 載入剛剛建立的私鑰');
+    final pem = widget.lastGeneratedKeyPem;
+    if (pem != null && pem.isNotEmpty) {
+      _loadKeyFromPem(pem);
+      debugPrint('[SelfCAScreen] 已載入剛剛建立的私鑰');
+    }
+  }
+
   // ── 產生憑證 ──
 
   void _generateCA() {
@@ -492,10 +511,11 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
               content: Text('Saved to: $outputPath'),
               duration: const Duration(seconds: 2),
               backgroundColor: AppColors.surface,
-            ),
-          );
-        }
-      }
+      ),
+    );
+  }
+}
+
     } catch (e) {
       debugPrint('[SelfCAScreen] 儲存失敗: $e');
       if (mounted) {
@@ -729,6 +749,22 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
             Expanded(
               child: _buildFieldLabel(l10n.selfCAPrivateKey, required: true),
             ),
+            if (_hasLastGeneratedKey)
+              _AccentButton(
+                icon: Icons.swap_horiz_outlined,
+                label: l10n.selfCAUseLastKey,
+                onPressed: () => _useLastGeneratedKey(),
+              )
+            else
+              Opacity(
+                opacity: 0.4,
+                child: _SmallOutlineButton(
+                  icon: Icons.swap_horiz_outlined,
+                  label: l10n.selfCAUseLastKey,
+                  onPressed: null,
+                ),
+              ),
+            const SizedBox(width: 6),
             _SmallOutlineButton(
               icon: Icons.file_open_outlined,
               label: l10n.selfCAPrivateKeyLoad,
@@ -1585,6 +1621,49 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
 // 共用私有元件
 // ============================================================
 
+/// 小型強調按鈕（同主按鈕配色，用於可用狀態）
+class _AccentButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _AccentButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.primary,
+      borderRadius: BorderRadius.circular(4),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(4),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: AppColors.textPrimary),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// 結果分頁切換按鈕
 class _ResultTab extends StatelessWidget {
   final String label;
@@ -1700,7 +1779,7 @@ class _IconButton extends StatelessWidget {
 class _SmallOutlineButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const _SmallOutlineButton({
     required this.icon,

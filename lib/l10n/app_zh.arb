@@ -132,5 +132,6 @@
   "selfCAKeyRequired": "需要加载私钥才能生成证书。",
   "selfCAKeyLoaded": "已加载密钥",
   "selfCAKeyNotLoaded": "尚未加载密钥",
-  "selfCAKeyClear": "清除密钥"
+  "selfCAKeyClear": "清除密钥",
+  "selfCAUseLastKey": "使用刚刚创建的密钥"
 }

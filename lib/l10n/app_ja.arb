@@ -132,5 +132,6 @@
   "selfCAKeyRequired": "証明書を生成するには秘密鍵が必要です。",
   "selfCAKeyLoaded": "鍵が読み込まれました",
   "selfCAKeyNotLoaded": "鍵が読み込まれていません",
-  "selfCAKeyClear": "鍵をクリア"
+  "selfCAKeyClear": "鍵をクリア",
+  "selfCAUseLastKey": "作成した鍵を使用"
 }

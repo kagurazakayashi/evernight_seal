@@ -132,5 +132,6 @@
   "selfCAKeyRequired": "需要載入私鑰才能產生憑證。",
   "selfCAKeyLoaded": "已載入金鑰",
   "selfCAKeyNotLoaded": "尚未載入金鑰",
-  "selfCAKeyClear": "清除金鑰"
+  "selfCAKeyClear": "清除金鑰",
+  "selfCAUseLastKey": "使用剛剛建立的金鑰"
 }

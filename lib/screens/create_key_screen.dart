@@ -14,7 +14,9 @@ import '../theme/app_colors.dart';
 /// 提供使用者選擇加密演算法（RSA / EC）、金鑰長度或曲線，
 /// 並生成對應的私鑰與公鑰 PEM 格式。
 class CreateKeyScreen extends StatefulWidget {
-  const CreateKeyScreen({super.key});
+  final ValueChanged<String>? onKeyGenerated;
+
+  const CreateKeyScreen({super.key, this.onKeyGenerated});
 
   @override
   State<CreateKeyScreen> createState() => _CreateKeyScreenState();
@@ -99,6 +101,8 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
       });
 
       debugPrint('[CreateKeyScreen] 金鑰生成成功');
+      // 通知外部有新私鑰可用
+      widget.onKeyGenerated?.call(result.privateKeyPem);
     } catch (e) {
       debugPrint('[CreateKeyScreen] 金鑰生成失敗: $e');
       setState(() {

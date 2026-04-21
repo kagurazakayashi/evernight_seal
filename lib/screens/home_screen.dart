@@ -22,20 +22,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   bool _sidebarOpen = true;
-  List<NavItem>? _items;
   final GlobalKey<ScaffoldState> _mobileScaffoldKey = GlobalKey<ScaffoldState>();
+
+  /// 建立私鑰功能產生後儲存於此，供自簽名 CA 畫面讀取
+  String? _lastGeneratedKeyPem;
 
   double? _lastWidth;
   double? _lastHeight;
-
-  List<NavItem> get items => _items ??= _buildItems();
 
   List<NavItem> _buildItems() {
     final l10n = AppLocalizations.of(context);
     return [
       NavItem(title: l10n.menuViewCert, subtitle: l10n.menuViewCertDesc, icon: Icons.visibility_outlined, page: const CertViewScreen()),
-      NavItem(title: l10n.menuCreateKey, subtitle: l10n.menuCreateKeyDesc, icon: Icons.vpn_key_outlined, page: const CreateKeyScreen()),
-      NavItem(title: l10n.menuSelfCA, subtitle: l10n.menuSelfCADesc, icon: Icons.verified_user_outlined, page: const SelfCAScreen()),
+      NavItem(title: l10n.menuCreateKey, subtitle: l10n.menuCreateKeyDesc, icon: Icons.vpn_key_outlined, page: CreateKeyScreen(onKeyGenerated: (pem) => setState(() => _lastGeneratedKeyPem = pem))),
+      NavItem(title: l10n.menuSelfCA, subtitle: l10n.menuSelfCADesc, icon: Icons.verified_user_outlined, page: SelfCAScreen(lastGeneratedKeyPem: _lastGeneratedKeyPem)),
       NavItem(title: l10n.menuCreateCSR, subtitle: l10n.menuCreateCSRDesc, icon: Icons.description_outlined, page: const CreateCSRScreen()),
       NavItem(title: l10n.menuIssueCert, subtitle: l10n.menuIssueCertDesc, icon: Icons.assignment_turned_in_outlined, page: const IssueCertScreen()),
       NavItem(title: l10n.menuExport, subtitle: l10n.menuExportDesc, icon: Icons.file_download_outlined, page: const ExportScreen()),
@@ -45,6 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final items = _buildItems();
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final w = constraints.maxWidth;
