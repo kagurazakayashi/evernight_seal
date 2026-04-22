@@ -133,5 +133,8 @@
   "selfCAKeyLoaded": "已加载密钥",
   "selfCAKeyNotLoaded": "尚未加载密钥",
   "selfCAKeyClear": "清除密钥",
-  "selfCAUseLastKey": "使用刚刚创建的密钥"
+  "selfCAUseLastKey": "使用刚刚创建的密钥",
+  "validityDays": "天",
+  "validityMonths": "月",
+  "validityYears": "年"
 }

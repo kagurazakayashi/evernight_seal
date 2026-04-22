@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../services/certificate_service.dart';
 import '../theme/app_colors.dart';
+import '../widgets/validity_input.dart';
 
 /// 自簽名 CA 憑證畫面
 ///
@@ -890,21 +891,15 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
   // ── 有效期與簽名 ──
 
   Widget _buildValiditySelector(AppLocalizations l10n) {
-    const dayOptions = [365, 730, 1825, 3650, 5475, 7300, 10950];
     const sigAlgos = ['SHA-256', 'SHA-384', 'SHA-512'];
 
     return Column(
       children: [
-        _buildDropdownSelector<int>(
+        ValidityInput(
+          initialDays: _validityDays,
           label: l10n.selfCADays,
-          value: _validityDays,
-          items: dayOptions,
-          itemLabel: (v) {
-            final years = v ~/ 365;
-            return '$v days ($years year${years > 1 ? 's' : ''})';
-          },
           onChanged: (v) {
-            debugPrint('[SelfCAScreen] 選擇有效天數: $v');
+            debugPrint('[SelfCAScreen] 有效天數變更: $v');
             setState(() => _validityDays = v);
             _savePreferences();
           },

@@ -133,5 +133,8 @@
   "selfCAKeyLoaded": "鍵が読み込まれました",
   "selfCAKeyNotLoaded": "鍵が読み込まれていません",
   "selfCAKeyClear": "鍵をクリア",
-  "selfCAUseLastKey": "作成した鍵を使用"
+  "selfCAUseLastKey": "作成した鍵を使用",
+  "validityDays": "日",
+  "validityMonths": "月",
+  "validityYears": "年"
 }

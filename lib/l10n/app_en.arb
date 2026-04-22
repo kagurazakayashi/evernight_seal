@@ -136,5 +136,8 @@
   "selfCAKeyLoaded": "Key loaded",
   "selfCAKeyNotLoaded": "No key loaded",
   "selfCAKeyClear": "Clear Key",
-  "selfCAUseLastKey": "Use Created Key"
+  "selfCAUseLastKey": "Use Created Key",
+  "validityDays": "Days",
+  "validityMonths": "Months",
+  "validityYears": "Years"
 }
