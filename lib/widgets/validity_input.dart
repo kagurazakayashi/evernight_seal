@@ -3,6 +3,15 @@ import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 
+/// UTCTime 只支援 1950–2049 年。
+/// 計算從現在起到 2049-12-31 的剩餘天數作為最大有效期。
+int getMaxValidityDays() {
+  final now = DateTime.now().toUtc();
+  final limit = DateTime.utc(2049, 12, 31, 23, 59, 59);
+  final remaining = limit.difference(now).inDays;
+  return remaining > 0 ? remaining : 0;
+}
+
 /// 時間單位列舉
 enum ValidityUnit {
   days(1),
@@ -52,12 +61,18 @@ class _ValidityInputState extends State<ValidityInput> {
   @override
   void initState() {
     super.initState();
-    _totalDays = widget.initialDays;
+    _totalDays = widget.initialDays.clamp(1, getMaxValidityDays());
     // 自動選擇最合理的初始單位
     _unit = _bestUnit(_totalDays);
     _controller = TextEditingController(
       text: _unit.displayValue(_totalDays).toString(),
     );
+    // 若初始值被截斷，通知上層
+    if (_totalDays != widget.initialDays) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onChanged?.call(_totalDays);
+      });
+    }
   }
 
   @override
@@ -76,7 +91,21 @@ class _ValidityInputState extends State<ValidityInput> {
   void _onTextChanged(String text) {
     final v = int.tryParse(text);
     if (v != null && v > 0) {
-      _totalDays = _unit.toTotalDays(v);
+      var total = _unit.toTotalDays(v);
+      final maxDays = getMaxValidityDays();
+      if (total > maxDays) {
+        total = maxDays;
+        // 修正輸入框顯示為上限值
+        final cappedDisplay = _unit.displayValue(total).toString();
+        if (_controller.text != cappedDisplay) {
+          _controller.text = cappedDisplay;
+          // 移動游標到末尾
+          _controller.selection = TextSelection.collapsed(
+            offset: cappedDisplay.length,
+          );
+        }
+      }
+      _totalDays = total;
       widget.onChanged?.call(_totalDays);
     }
   }

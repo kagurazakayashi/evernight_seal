@@ -20,7 +20,14 @@ class SelfCAScreen extends StatefulWidget {
   /// 從建立私鑰畫面傳遞過來的已產生私鑰 PEM（可為 null）
   final String? lastGeneratedKeyPem;
 
-  const SelfCAScreen({super.key, this.lastGeneratedKeyPem});
+  /// 查看詳細資訊的回呼，傳入 PEM 文字後導覽到憑證檢視畫面
+  final ValueChanged<String>? onViewDetails;
+
+  const SelfCAScreen({
+    super.key,
+    this.lastGeneratedKeyPem,
+    this.onViewDetails,
+  });
 
   @override
   State<SelfCAScreen> createState() => _SelfCAScreenState();
@@ -150,7 +157,11 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
       _lController.text = prefs.getString(_prefL) ?? '';
       _stController.text = prefs.getString(_prefST) ?? '';
       _cController.text = prefs.getString(_prefC) ?? '';
-      _validityDays = prefs.getInt(_prefDays) ?? 3650;
+      _validityDays = (prefs.getInt(_prefDays) ?? 3650).clamp(1, getMaxValidityDays());
+      if (_validityDays != (prefs.getInt(_prefDays) ?? 3650)) {
+        debugPrint('[SelfCAScreen] 有效期已被截斷至 $_validityDays 天（原值超出範圍）');
+        prefs.setInt(_prefDays, _validityDays);
+      }
       _signatureAlgorithm = prefs.getString(_prefSigAlgo) ?? 'SHA-256';
       _serialController.text = prefs.getString(_prefSerial) ?? '';
       _pathLenController.text = prefs.getString(_prefPathLen) ?? '';
@@ -336,6 +347,34 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
       'days=$_validityDays, sigAlgo=$_signatureAlgorithm',
     );
 
+    // UTCTime 上限檢查：若當前時間已超過 2049 年，無法產生憑證
+    final maxDays = getMaxValidityDays();
+    if (maxDays <= 0) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Text('CA Certificate Generation Unavailable',
+              style: const TextStyle(color: AppColors.textPrimary)),
+          content: const Text(
+            'The underlying library uses UTCTime (2-digit year) which only '
+            'supports dates through 2049-12-31. Certificate generation is no '
+            'longer possible after this date.\n\n'
+            'This limitation comes from the basic_utils dependency.',
+            style: TextStyle(color: AppColors.textSecondary),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('OK',
+                  style: TextStyle(color: AppColors.primary)),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
     // 驗證 CN 必填
     final cn = _cnController.text.trim();
     if (cn.isEmpty) {
@@ -416,14 +455,13 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
         );
       }
 
-      // 4. 取得序號或自動產生
+      // 4. 取得序號或自動產生（用十進制數字，BigInt.parse 預設只認十進制）
       String serialNumber = _serialController.text.trim();
       if (serialNumber.isEmpty) {
         final rng = Random.secure();
         serialNumber = BigInt.from(rng.nextInt(1 << 31))
             .abs()
-            .toRadixString(16)
-            .toUpperCase();
+            .toRadixString(10);
       }
 
       // 5. 解析路徑長度限制
@@ -1352,6 +1390,14 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
                   : l10n.selfCASaveKey,
               onPressed: () => _savePem(currentPem, defaultFileName),
             ),
+            if (widget.onViewDetails != null) ...[
+              const Spacer(),
+              _ActionChip(
+                icon: Icons.visibility_outlined,
+                label: l10n.selfCAViewDetails,
+                onPressed: () => widget.onViewDetails!(currentPem),
+              ),
+            ],
           ],
         ),
       ],

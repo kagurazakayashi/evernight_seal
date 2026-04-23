@@ -139,5 +139,6 @@
   "selfCAUseLastKey": "Use Created Key",
   "validityDays": "Days",
   "validityMonths": "Months",
-  "validityYears": "Years"
+  "validityYears": "Years",
+  "selfCAViewDetails": "View Details"
 }

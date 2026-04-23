@@ -1,0 +1,1 @@
+START "DEBUG" /D "%CD%" flutter.bat run -d windows --print-dtd

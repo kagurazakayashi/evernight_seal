@@ -136,5 +136,6 @@
   "selfCAUseLastKey": "使用刚刚创建的密钥",
   "validityDays": "天",
   "validityMonths": "月",
-  "validityYears": "年"
+  "validityYears": "年",
+  "selfCAViewDetails": "查看详细信息"
 }

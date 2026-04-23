@@ -14,10 +14,10 @@ class CertViewScreen extends StatefulWidget {
   const CertViewScreen({super.key});
 
   @override
-  State<CertViewScreen> createState() => _CertViewScreenState();
+  State<CertViewScreen> createState() => CertViewScreenState();
 }
 
-class _CertViewScreenState extends State<CertViewScreen> {
+class CertViewScreenState extends State<CertViewScreen> {
   final TextEditingController _pemController = TextEditingController();
 
   CertParseResult? _result;
@@ -31,6 +31,20 @@ class _CertViewScreenState extends State<CertViewScreen> {
   /// 目前展開的憑證索引集合
   final Set<int> _expandedIndices = {};
 
+  /// 供外部導覽呼叫：設定 PEM 文字並自動解析
+  void viewPem(String pem) {
+    debugPrint('[CertViewScreen] 外部導覽檢視 PEM (${pem.length} 字元)');
+    debugPrint('[CertViewScreen] PEM 前 80 字元: ${pem.substring(0, pem.length < 80 ? pem.length : 80)}');
+    _pemController.text = pem;
+    // 將原始 PEM 直接傳入解析，不依賴 controller.text
+    _parsePemText(pem.trim());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   void dispose() {
     _pemController.dispose();
@@ -39,11 +53,18 @@ class _CertViewScreenState extends State<CertViewScreen> {
 
   // ---- 解析邏輯 ----
 
-  void _parsePemText() {
-    final text = _pemController.text.trim();
-    if (text.isEmpty) return;
+  void _parsePemText([String? rawInput]) {
+    final input = rawInput ?? _pemController.text.trim();
+    if (input.isEmpty) return;
+
+    // 正規化換行符號：\r\n / \r → \n，避免 Windows 剪貼簿或行尾格式干擾
+    final text = input.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
     debugPrint('[CertViewScreen] 解析 PEM 文字 (${text.length} 字元)');
+    // 手動檢查 PEM 區塊
+    final containsBegin = text.contains('-----BEGIN CERTIFICATE-----');
+    final containsEnd = text.contains('-----END CERTIFICATE-----');
+    debugPrint('[CertViewScreen] 含 BEGIN: $containsBegin, 含 END: $containsEnd');
 
     setState(() {
       _isLoading = true;
@@ -53,6 +74,9 @@ class _CertViewScreenState extends State<CertViewScreen> {
     try {
       final result = CertificateService.parsePemText(text);
       final pk = _tryParsePrivateKey(text);
+      debugPrint('[CertViewScreen] 解析結果: isSuccess=${result.isSuccess}, '
+          'certCount=${result.certificates.length}, '
+          'error=${result.errorMessage}, hasPk=${pk != null}');
       setState(() {
         _result = result.isSuccess ? result : null;
         // 若有私鑰但無證書，不顯示證書解析錯誤
