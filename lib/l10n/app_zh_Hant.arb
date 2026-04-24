@@ -137,5 +137,13 @@
   "validityDays": "天",
   "validityMonths": "月",
   "validityYears": "年",
-  "selfCAViewDetails": "檢視詳細資訊"
+  "selfCAViewDetails": "檢視詳細資訊",
+
+  "csrSectionSignature": "簽名",
+  "csrCommonNameHint": "例如：www.example.com",
+  "csrGenerate": "產生 CSR",
+  "csrCopyPem": "複製 CSR PEM",
+  "csrSavePem": "儲存 CSR",
+  "csrKeyRequired": "需要載入私鑰才能產生 CSR。",
+  "csrResultTitle": "CSR 已產生"
 }

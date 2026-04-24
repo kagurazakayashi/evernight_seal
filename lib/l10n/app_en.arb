@@ -140,5 +140,13 @@
   "validityDays": "Days",
   "validityMonths": "Months",
   "validityYears": "Years",
-  "selfCAViewDetails": "View Details"
+  "selfCAViewDetails": "View Details",
+
+  "csrSectionSignature": "Signature",
+  "csrCommonNameHint": "e.g. www.example.com",
+  "csrGenerate": "Generate CSR",
+  "csrCopyPem": "Copy CSR PEM",
+  "csrSavePem": "Save CSR",
+  "csrKeyRequired": "A private key is required to generate the CSR.",
+  "csrResultTitle": "CSR Generated"
 }

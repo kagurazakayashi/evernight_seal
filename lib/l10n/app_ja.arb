@@ -137,5 +137,13 @@
   "validityDays": "日",
   "validityMonths": "月",
   "validityYears": "年",
-  "selfCAViewDetails": "詳細を表示"
+  "selfCAViewDetails": "詳細を表示",
+
+  "csrSectionSignature": "署名",
+  "csrCommonNameHint": "例：www.example.com",
+  "csrGenerate": "CSR を生成",
+  "csrCopyPem": "CSR PEM をコピー",
+  "csrSavePem": "CSR を保存",
+  "csrKeyRequired": "CSR を生成するには秘密鍵が必要です。",
+  "csrResultTitle": "CSR が生成されました"
 }

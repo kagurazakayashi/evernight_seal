@@ -68,7 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
           onViewDetails: _navigateToCertView,
         ),
       ),
-      NavItem(title: l10n.menuCreateCSR, subtitle: l10n.menuCreateCSRDesc, icon: Icons.description_outlined, page: const CreateCSRScreen()),
+      NavItem(
+        title: l10n.menuCreateCSR,
+        subtitle: l10n.menuCreateCSRDesc,
+        icon: Icons.description_outlined,
+        page: CreateCSRScreen(
+          lastGeneratedKeyPem: _lastGeneratedKeyPem,
+          onViewDetails: _navigateToCertView,
+        ),
+      ),
       NavItem(title: l10n.menuIssueCert, subtitle: l10n.menuIssueCertDesc, icon: Icons.assignment_turned_in_outlined, page: const IssueCertScreen()),
       NavItem(title: l10n.menuExport, subtitle: l10n.menuExportDesc, icon: Icons.file_download_outlined, page: const ExportScreen()),
       NavItem(title: l10n.menuKeyManager, subtitle: l10n.menuKeyManagerDesc, icon: Icons.folder_outlined, page: const KeyManagerScreen()),
