@@ -16,7 +16,10 @@ import '../theme/app_colors.dart';
 class CreateKeyScreen extends StatefulWidget {
   final ValueChanged<String>? onKeyGenerated;
 
-  const CreateKeyScreen({super.key, this.onKeyGenerated});
+  /// 查看詳細資訊的回呼，傳入 PEM 文字後導覽到憑證檢視畫面
+  final ValueChanged<String>? onViewDetails;
+
+  const CreateKeyScreen({super.key, this.onKeyGenerated, this.onViewDetails});
 
   @override
   State<CreateKeyScreen> createState() => _CreateKeyScreenState();
@@ -520,6 +523,14 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
               label: l10n.createKeySave,
               onPressed: () => _saveKey(currentPem, defaultFileName),
             ),
+            if (widget.onViewDetails != null) ...[
+              const Spacer(),
+              _ActionChip(
+                icon: Icons.visibility_outlined,
+                label: l10n.selfCAViewDetails,
+                onPressed: () => widget.onViewDetails!(currentPem),
+              ),
+            ],
           ],
         ),
       ],

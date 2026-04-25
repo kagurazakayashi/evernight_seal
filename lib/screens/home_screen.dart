@@ -28,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
   /// 建立私鑰功能產生後儲存於此，供自簽名 CA 畫面讀取
   String? _lastGeneratedKeyPem;
 
+  /// 自簽名 CA 功能產生後儲存於此，供簽發憑證畫面讀取
+  String? _lastGeneratedCACertPem;
+
+  /// 建立 CSR 功能產生後儲存於此，供簽發憑證畫面讀取
+  String? _lastGeneratedCSRPem;
+
   double? _lastWidth;
   double? _lastHeight;
 
@@ -57,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: Icons.vpn_key_outlined,
         page: CreateKeyScreen(
           onKeyGenerated: (pem) => setState(() => _lastGeneratedKeyPem = pem),
+          onViewDetails: _navigateToCertView,
         ),
       ),
       NavItem(
@@ -66,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
         page: SelfCAScreen(
           lastGeneratedKeyPem: _lastGeneratedKeyPem,
           onViewDetails: _navigateToCertView,
+          onCACertGenerated: (pem) => setState(() => _lastGeneratedCACertPem = pem),
         ),
       ),
       NavItem(
@@ -75,9 +83,20 @@ class _HomeScreenState extends State<HomeScreen> {
         page: CreateCSRScreen(
           lastGeneratedKeyPem: _lastGeneratedKeyPem,
           onViewDetails: _navigateToCertView,
+          onCSRGenerated: (pem) => setState(() => _lastGeneratedCSRPem = pem),
         ),
       ),
-      NavItem(title: l10n.menuIssueCert, subtitle: l10n.menuIssueCertDesc, icon: Icons.assignment_turned_in_outlined, page: const IssueCertScreen()),
+      NavItem(
+        title: l10n.menuIssueCert,
+        subtitle: l10n.menuIssueCertDesc,
+        icon: Icons.assignment_turned_in_outlined,
+        page: IssueCertScreen(
+          lastGeneratedKeyPem: _lastGeneratedKeyPem,
+          lastGeneratedCACertPem: _lastGeneratedCACertPem,
+          lastGeneratedCSRPem: _lastGeneratedCSRPem,
+          onViewDetails: _navigateToCertView,
+        ),
+      ),
       NavItem(title: l10n.menuExport, subtitle: l10n.menuExportDesc, icon: Icons.file_download_outlined, page: const ExportScreen()),
       NavItem(title: l10n.menuKeyManager, subtitle: l10n.menuKeyManagerDesc, icon: Icons.folder_outlined, page: const KeyManagerScreen()),
     ];

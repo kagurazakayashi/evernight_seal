@@ -23,10 +23,14 @@ class SelfCAScreen extends StatefulWidget {
   /// 查看詳細資訊的回呼，傳入 PEM 文字後導覽到憑證檢視畫面
   final ValueChanged<String>? onViewDetails;
 
+  /// 當 CA 憑證產生成功時回呼，傳出憑證 PEM 文字
+  final ValueChanged<String>? onCACertGenerated;
+
   const SelfCAScreen({
     super.key,
     this.lastGeneratedKeyPem,
     this.onViewDetails,
+    this.onCACertGenerated,
   });
 
   @override
@@ -496,6 +500,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
       });
 
       debugPrint('[SelfCAScreen] CA 憑證產生成功');
+      widget.onCACertGenerated?.call(certPem);
     } catch (e) {
       debugPrint('[SelfCAScreen] CA 憑證產生失敗: $e');
       setState(() {

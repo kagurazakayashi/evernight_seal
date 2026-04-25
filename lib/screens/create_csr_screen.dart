@@ -21,10 +21,14 @@ class CreateCSRScreen extends StatefulWidget {
   /// 查看詳細資訊的回呼，傳入 PEM 文字後導覽到憑證檢視畫面
   final ValueChanged<String>? onViewDetails;
 
+  /// 當 CSR 產生成功時回呼，傳出 CSR PEM 文字
+  final ValueChanged<String>? onCSRGenerated;
+
   const CreateCSRScreen({
     super.key,
     this.lastGeneratedKeyPem,
     this.onViewDetails,
+    this.onCSRGenerated,
   });
 
   @override
@@ -358,6 +362,7 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
       });
 
       debugPrint('[CreateCSRScreen] CSR 產生成功');
+      widget.onCSRGenerated?.call(csrPem);
     } catch (e) {
       debugPrint('[CreateCSRScreen] CSR 產生失敗: $e');
       setState(() {
