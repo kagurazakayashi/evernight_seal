@@ -29,12 +29,16 @@ class IssueCertScreen extends StatefulWidget {
   /// 查看詳細資訊的回呼
   final ValueChanged<String>? onViewDetails;
 
+  /// 當憑證簽發成功時回呼，傳出憑證 PEM 文字
+  final ValueChanged<String>? onCertIssued;
+
   const IssueCertScreen({
     super.key,
     this.lastGeneratedKeyPem,
     this.lastGeneratedCACertPem,
     this.lastGeneratedCSRPem,
     this.onViewDetails,
+    this.onCertIssued,
   });
 
   @override
@@ -115,6 +119,36 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
   bool get _hasLastCSR =>
       widget.lastGeneratedCSRPem != null &&
       widget.lastGeneratedCSRPem!.isNotEmpty;
+
+  /// 是否有任何外部傳入的值可用（用於一鍵載入按鈕）
+  bool get _hasAnyRecent => _hasLastCACert || _hasLastKey || _hasLastCSR;
+
+  /// 一鍵載入所有可用的最近產生項目
+  void _loadAllRecent() {
+    debugPrint('[IssueCertScreen] 一鍵載入全部: '
+        'caCert=$_hasLastCACert, key=$_hasLastKey, csr=$_hasLastCSR');
+    if (_hasLastCACert) _useLastCACert();
+    if (_hasLastKey) _useLastKey();
+    if (_hasLastCSR) _useLastCSR();
+  }
+
+  /// 一鍵移除全部：清空所有輸入與結果
+  void _clearAll() {
+    debugPrint('[IssueCertScreen] 一鍵移除全部');
+    setState(() {
+      _caCertPem = null;
+      _caCertCN = null;
+      _caKeyPem = null;
+      _detectedKeyType = null;
+      _detectedKeySize = null;
+      _detectedCurve = null;
+      _csrPem = null;
+      _csrSubjectCN = null;
+      _certPem = null;
+      _errorMessage = null;
+    });
+    _savePreferences();
+  }
 
   @override
   void initState() {
@@ -606,6 +640,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       });
 
       debugPrint('[IssueCertScreen] 憑證簽發成功');
+      widget.onCertIssued?.call(certPem);
     } catch (e) {
       debugPrint('[IssueCertScreen] 憑證簽發失敗: $e');
       setState(() {
@@ -711,6 +746,10 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 children: [
+                  // ── 快速操作按鈕 ──
+                  _buildQuickActionButtons(l10n),
+                  const SizedBox(height: 8),
+
                   // ── CA 憑證 ──
                   _buildSectionHeader(l10n.issueCertSectionCACert),
                   const SizedBox(height: 8),
@@ -978,6 +1017,39 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
             ),
             onChanged: onTextChanged,
           ),
+        ),
+      ],
+    );
+  }
+
+  // ── 快速操作按鈕 ──
+
+  Widget _buildQuickActionButtons(AppLocalizations l10n) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        // 一鍵載入全部
+        if (_hasAnyRecent)
+          _AccentButton(
+            icon: Icons.auto_awesome,
+            label: l10n.issueCertLoadAllRecent,
+            onPressed: _loadAllRecent,
+          )
+        else
+          Opacity(
+            opacity: 0.4,
+            child: _SmallOutlineButton(
+              icon: Icons.auto_awesome,
+              label: l10n.issueCertLoadAllRecent,
+              onPressed: null,
+            ),
+          ),
+        // 一鍵移除全部
+        _SmallOutlineButton(
+          icon: Icons.delete_sweep_outlined,
+          label: l10n.issueCertClearAll,
+          onPressed: _clearAll,
         ),
       ],
     );

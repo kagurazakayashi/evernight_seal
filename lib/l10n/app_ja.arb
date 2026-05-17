@@ -168,5 +168,35 @@
   "issueCertCSRHint": "CSR PEM を貼り付け...",
   "issueCertIsCA": "CA かどうか",
   "issueCertLoadCACertFile": "CA 証明書を読み込む",
-  "issueCertLoadCSRFile": "CSR ファイルを読み込む"
+  "issueCertLoadCSRFile": "CSR ファイルを読み込む",
+  "issueCertLoadAllRecent": "すべて読み込む",
+  "issueCertClearAll": "すべてクリア",
+
+  "menuMergeCert": "証明書を結合",
+  "menuMergeCertDesc": "複数の証明書をチェーンまたは PKCS#7 バンドルに結合",
+  "mergeCertSectionCerts": "証明書",
+  "mergeCertSectionKey": "秘密鍵（オプション）",
+  "mergeCertSectionOutput": "出力形式",
+  "mergeCertAddEntry": "証明書を追加",
+  "mergeCertHint": "証明書 PEM を貼り付け...",
+  "mergeCertCertLoaded": "証明書が読み込まれました",
+  "mergeCertLoadFile": "ファイルを読み込む",
+  "mergeCertLoadAllRecent": "すべて読み込む",
+  "mergeCertClearAll": "すべてクリア",
+  "mergeCertUseLastCACert": "CA 証明書を使用",
+  "mergeCertUseLastIssuedCert": "発行済み証明書を使用",
+  "mergeCertIncludeKey": "秘密鍵を含める",
+  "mergeCertFormatPEM": "PEM チェーン",
+  "mergeCertFormatPKCS7": "PKCS#7",
+  "mergeCertMerge": "結合",
+  "mergeCertCopyResult": "結果をコピー",
+  "mergeCertSaveResult": "保存",
+  "mergeCertResultTitle": "証明書が結合されました",
+  "mergeCertNoCerts": "少なくとも1つの証明書を追加してください。",
+  "mergeCertEntry": "証明書 #{index}",
+  "@mergeCertEntry": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  }
 }

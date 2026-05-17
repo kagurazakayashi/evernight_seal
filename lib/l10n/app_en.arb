@@ -171,5 +171,35 @@
   "issueCertCSRHint": "Paste CSR PEM here...",
   "issueCertIsCA": "Is CA",
   "issueCertLoadCACertFile": "Load CA Cert",
-  "issueCertLoadCSRFile": "Load CSR File"
+  "issueCertLoadCSRFile": "Load CSR File",
+  "issueCertLoadAllRecent": "Load All Recent",
+  "issueCertClearAll": "Clear All",
+
+  "menuMergeCert": "Merge Certificates",
+  "menuMergeCertDesc": "Combine certificates into a chain or PKCS#7 bundle",
+  "mergeCertSectionCerts": "Certificates",
+  "mergeCertSectionKey": "Private Key (Optional)",
+  "mergeCertSectionOutput": "Output Format",
+  "mergeCertAddEntry": "Add Certificate",
+  "mergeCertHint": "Paste certificate PEM here...",
+  "mergeCertCertLoaded": "Certificate loaded",
+  "mergeCertLoadFile": "Load File",
+  "mergeCertLoadAllRecent": "Load All Recent",
+  "mergeCertClearAll": "Clear All",
+  "mergeCertUseLastCACert": "Use CA Cert",
+  "mergeCertUseLastIssuedCert": "Use Issued Cert",
+  "mergeCertIncludeKey": "Include Private Key",
+  "mergeCertFormatPEM": "PEM Chain",
+  "mergeCertFormatPKCS7": "PKCS#7",
+  "mergeCertMerge": "Merge",
+  "mergeCertCopyResult": "Copy Result",
+  "mergeCertSaveResult": "Save",
+  "mergeCertResultTitle": "Certificates Merged",
+  "mergeCertNoCerts": "Add at least one certificate to merge.",
+  "mergeCertEntry": "Certificate #{index}",
+  "@mergeCertEntry": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  }
 }

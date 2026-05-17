@@ -168,5 +168,35 @@
   "issueCertCSRHint": "在此貼上 CSR PEM...",
   "issueCertIsCA": "是否為 CA",
   "issueCertLoadCACertFile": "載入 CA 憑證",
-  "issueCertLoadCSRFile": "載入 CSR 檔案"
+  "issueCertLoadCSRFile": "載入 CSR 檔案",
+  "issueCertLoadAllRecent": "一鍵載入全部",
+  "issueCertClearAll": "一鍵移除全部",
+
+  "menuMergeCert": "合併憑證",
+  "menuMergeCertDesc": "將多個憑證合併為憑證鏈或 PKCS#7 包",
+  "mergeCertSectionCerts": "憑證",
+  "mergeCertSectionKey": "私鑰（選用）",
+  "mergeCertSectionOutput": "輸出格式",
+  "mergeCertAddEntry": "新增憑證",
+  "mergeCertHint": "在此貼上憑證 PEM...",
+  "mergeCertCertLoaded": "已載入憑證",
+  "mergeCertLoadFile": "載入檔案",
+  "mergeCertLoadAllRecent": "一鍵載入全部",
+  "mergeCertClearAll": "一鍵移除全部",
+  "mergeCertUseLastCACert": "使用 CA 憑證",
+  "mergeCertUseLastIssuedCert": "使用已簽發憑證",
+  "mergeCertIncludeKey": "包含私鑰",
+  "mergeCertFormatPEM": "PEM 鏈",
+  "mergeCertFormatPKCS7": "PKCS#7",
+  "mergeCertMerge": "合併",
+  "mergeCertCopyResult": "複製結果",
+  "mergeCertSaveResult": "儲存",
+  "mergeCertResultTitle": "憑證已合併",
+  "mergeCertNoCerts": "請至少新增一個憑證。",
+  "mergeCertEntry": "憑證 #{index}",
+  "@mergeCertEntry": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  }
 }

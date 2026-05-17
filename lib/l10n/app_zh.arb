@@ -168,5 +168,35 @@
   "issueCertCSRHint": "在此粘贴 CSR PEM...",
   "issueCertIsCA": "是否为 CA",
   "issueCertLoadCACertFile": "加载 CA 证书",
-  "issueCertLoadCSRFile": "加载 CSR 文件"
+  "issueCertLoadCSRFile": "加载 CSR 文件",
+  "issueCertLoadAllRecent": "一键加载全部",
+  "issueCertClearAll": "一键移除全部",
+
+  "menuMergeCert": "合并证书",
+  "menuMergeCertDesc": "将多个证书合并为证书链或 PKCS#7 包",
+  "mergeCertSectionCerts": "证书",
+  "mergeCertSectionKey": "私钥（可选）",
+  "mergeCertSectionOutput": "输出格式",
+  "mergeCertAddEntry": "添加证书",
+  "mergeCertHint": "在此粘贴证书 PEM...",
+  "mergeCertCertLoaded": "已加载证书",
+  "mergeCertLoadFile": "加载文件",
+  "mergeCertLoadAllRecent": "一键加载全部",
+  "mergeCertClearAll": "一键移除全部",
+  "mergeCertUseLastCACert": "使用 CA 证书",
+  "mergeCertUseLastIssuedCert": "使用已签发证书",
+  "mergeCertIncludeKey": "包含私钥",
+  "mergeCertFormatPEM": "PEM 链",
+  "mergeCertFormatPKCS7": "PKCS#7",
+  "mergeCertMerge": "合并",
+  "mergeCertCopyResult": "复制结果",
+  "mergeCertSaveResult": "保存",
+  "mergeCertResultTitle": "证书已合并",
+  "mergeCertNoCerts": "请至少添加一个证书。",
+  "mergeCertEntry": "证书 #{index}",
+  "@mergeCertEntry": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  }
 }

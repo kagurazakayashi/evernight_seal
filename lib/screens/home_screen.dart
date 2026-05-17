@@ -8,6 +8,7 @@ import 'create_key_screen.dart';
 import 'self_ca_screen.dart';
 import 'create_csr_screen.dart';
 import 'issue_cert_screen.dart';
+import 'merge_cert_screen.dart';
 import 'export_screen.dart';
 import 'key_manager_screen.dart';
 
@@ -33,6 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// 建立 CSR 功能產生後儲存於此，供簽發憑證畫面讀取
   String? _lastGeneratedCSRPem;
+
+  /// 簽發憑證功能產生後儲存於此，供合併憑證畫面讀取
+  String? _lastIssuedCertPem;
 
   double? _lastWidth;
   double? _lastHeight;
@@ -94,6 +98,18 @@ class _HomeScreenState extends State<HomeScreen> {
           lastGeneratedKeyPem: _lastGeneratedKeyPem,
           lastGeneratedCACertPem: _lastGeneratedCACertPem,
           lastGeneratedCSRPem: _lastGeneratedCSRPem,
+          onViewDetails: _navigateToCertView,
+          onCertIssued: (pem) => setState(() => _lastIssuedCertPem = pem),
+        ),
+      ),
+      NavItem(
+        title: l10n.menuMergeCert,
+        subtitle: l10n.menuMergeCertDesc,
+        icon: Icons.merge_type_outlined,
+        page: MergeCertScreen(
+          lastGeneratedCACertPem: _lastGeneratedCACertPem,
+          lastIssuedCertPem: _lastIssuedCertPem,
+          lastGeneratedKeyPem: _lastGeneratedKeyPem,
           onViewDetails: _navigateToCertView,
         ),
       ),
