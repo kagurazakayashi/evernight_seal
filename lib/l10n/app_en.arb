@@ -131,7 +131,7 @@
   "selfCASANPlaceholder": "e.g. example.com",
   "selfCAPrivateKey": "Private Key",
   "selfCAPrivateKeyHint": "Paste a private key PEM or load a key file...",
-  "selfCAPrivateKeyLoad": "Load Key File",
+  "selfCAPrivateKeyLoad": "Open Key File",
   "selfCAKeyRequired": "A private key is required to generate the certificate.",
   "selfCAKeyLoaded": "Key loaded",
   "selfCAKeyNotLoaded": "No key loaded",
@@ -170,8 +170,8 @@
   "issueCertCACertHint": "Paste CA certificate PEM here...",
   "issueCertCSRHint": "Paste CSR PEM here...",
   "issueCertIsCA": "Is CA",
-  "issueCertLoadCACertFile": "Load CA Cert",
-  "issueCertLoadCSRFile": "Load CSR File",
+  "issueCertLoadCACertFile": "Open CA Cert File",
+  "issueCertLoadCSRFile": "Open CSR File",
   "issueCertLoadAllRecent": "Load All Recent",
   "issueCertClearAll": "Clear All",
 
@@ -183,7 +183,7 @@
   "mergeCertAddEntry": "Add Certificate",
   "mergeCertHint": "Paste certificate PEM here...",
   "mergeCertCertLoaded": "Certificate loaded",
-  "mergeCertLoadFile": "Load File",
+  "mergeCertLoadFile": "Open File",
   "mergeCertLoadAllRecent": "Load All Recent",
   "mergeCertClearAll": "Clear All",
   "mergeCertUseLastCACert": "Use CA Cert",
@@ -201,5 +201,32 @@
     "placeholders": {
       "index": { "type": "int" }
     }
-  }
+  },
+
+  "menuVerify": "Verify",
+  "menuVerifyDesc": "Verify certificate and private key pair match",
+  "verifySectionCert": "Certificate",
+  "verifySectionKey": "Private Key",
+  "verifyLoadCertFile": "Open Cert File",
+  "verifyLoadKeyFile": "Open Key File",
+  "verifyCertHint": "Paste certificate PEM here...",
+  "verifyKeyHint": "Paste private key PEM here...",
+  "verifyCertLoaded": "Certificate loaded",
+  "verifyKeyLoaded": "Key loaded",
+  "verifyButton": "Verify Match",
+  "verifyClear": "Clear All",
+  "verifyResultMatched": "Key Pair Matched",
+  "verifyResultMismatched": "Key Pair Mismatched",
+  "verifyResultError": "Verification Error",
+  "verifyMatchedDesc": "The certificate and private key are a matching pair.",
+  "verifyMismatchedDesc": "The certificate and private key do NOT match.",
+  "verifyCertInfo": "Certificate",
+  "verifyKeyInfo": "Private Key",
+  "verifyNoData": "Load a certificate and a private key, then press Verify to check if they match.",
+  "verifyUseMergedCert": "Use Merged Cert",
+  "verifyUseCreatedKey": "Use Created Key",
+  "verifyLoadAllRecent": "Load All Recent",
+  "verifyClearAll": "Clear All",
+  "certViewKeyMatched": "Key Matched",
+  "certViewKeyMismatched": "Key Mismatched"
 }

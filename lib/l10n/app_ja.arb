@@ -128,7 +128,7 @@
   "selfCASANPlaceholder": "例：example.com",
   "selfCAPrivateKey": "秘密鍵",
   "selfCAPrivateKeyHint": "秘密鍵 PEM を貼り付けるか、鍵ファイルを読み込み...",
-  "selfCAPrivateKeyLoad": "鍵ファイルを読み込む",
+  "selfCAPrivateKeyLoad": "鍵ファイルを開く",
   "selfCAKeyRequired": "証明書を生成するには秘密鍵が必要です。",
   "selfCAKeyLoaded": "鍵が読み込まれました",
   "selfCAKeyNotLoaded": "鍵が読み込まれていません",
@@ -167,8 +167,8 @@
   "issueCertCACertHint": "CA 証明書 PEM を貼り付け...",
   "issueCertCSRHint": "CSR PEM を貼り付け...",
   "issueCertIsCA": "CA かどうか",
-  "issueCertLoadCACertFile": "CA 証明書を読み込む",
-  "issueCertLoadCSRFile": "CSR ファイルを読み込む",
+  "issueCertLoadCACertFile": "CA 証明書ファイルを開く",
+  "issueCertLoadCSRFile": "CSR ファイルを開く",
   "issueCertLoadAllRecent": "すべて読み込む",
   "issueCertClearAll": "すべてクリア",
 
@@ -180,7 +180,7 @@
   "mergeCertAddEntry": "証明書を追加",
   "mergeCertHint": "証明書 PEM を貼り付け...",
   "mergeCertCertLoaded": "証明書が読み込まれました",
-  "mergeCertLoadFile": "ファイルを読み込む",
+  "mergeCertLoadFile": "ファイルを開く",
   "mergeCertLoadAllRecent": "すべて読み込む",
   "mergeCertClearAll": "すべてクリア",
   "mergeCertUseLastCACert": "CA 証明書を使用",
@@ -198,5 +198,32 @@
     "placeholders": {
       "index": { "type": "int" }
     }
-  }
+  },
+
+  "menuVerify": "検証",
+  "menuVerifyDesc": "証明書と秘密鍵のペアが一致するか検証",
+  "verifySectionCert": "証明書",
+  "verifySectionKey": "秘密鍵",
+  "verifyLoadCertFile": "証明書ファイルを開く",
+  "verifyLoadKeyFile": "秘密鍵ファイルを開く",
+  "verifyCertHint": "証明書 PEM を貼り付け...",
+  "verifyKeyHint": "秘密鍵 PEM を貼り付け...",
+  "verifyCertLoaded": "証明書が読み込まれました",
+  "verifyKeyLoaded": "秘密鍵が読み込まれました",
+  "verifyButton": "一致を検証",
+  "verifyClear": "すべてクリア",
+  "verifyResultMatched": "鍵ペアが一致",
+  "verifyResultMismatched": "鍵ペアが不一致",
+  "verifyResultError": "検証エラー",
+  "verifyMatchedDesc": "証明書と秘密鍵は一致するペアです。",
+  "verifyMismatchedDesc": "証明書と秘密鍵が一致しません。",
+  "verifyCertInfo": "証明書",
+  "verifyKeyInfo": "秘密鍵",
+  "verifyNoData": "証明書と秘密鍵を読み込み、検証を押して一致するか確認してください。",
+  "verifyUseMergedCert": "結合した証明書を使用",
+  "verifyUseCreatedKey": "作成した鍵を使用",
+  "verifyLoadAllRecent": "すべて読み込む",
+  "verifyClearAll": "すべてクリア",
+  "certViewKeyMatched": "鍵が一致",
+  "certViewKeyMismatched": "鍵が不一致"
 }

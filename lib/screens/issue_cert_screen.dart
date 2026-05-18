@@ -97,9 +97,6 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
   bool _isGenerating = false;
 
   // ── SharedPreferences key 常數 ──
-  static const _prefCACertPem = 'issueCert_caCertPem';
-  static const _prefCAKeyPem = 'issueCert_caKeyPem';
-  static const _prefCSRPem = 'issueCert_csrPem';
   static const _prefDays = 'issueCert_days';
   static const _prefSigAlgo = 'issueCert_signatureAlgo';
   static const _prefSerial = 'issueCert_serial';
@@ -171,24 +168,6 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
     _prefs = prefs;
 
     setState(() {
-      final caCert = prefs.getString(_prefCACertPem);
-      if (caCert != null && caCert.isNotEmpty) {
-        _caCertPem = caCert;
-        _parseCACertInfo();
-      }
-
-      final caKey = prefs.getString(_prefCAKeyPem);
-      if (caKey != null && caKey.isNotEmpty) {
-        _caKeyPem = caKey;
-        _detectKeyInfo();
-      }
-
-      final csr = prefs.getString(_prefCSRPem);
-      if (csr != null && csr.isNotEmpty) {
-        _csrPem = csr;
-        _parseCSRInfo();
-      }
-
       _validityDays =
           (prefs.getInt(_prefDays) ?? 365).clamp(1, getMaxValidityDays());
       _signatureAlgorithm = prefs.getString(_prefSigAlgo) ?? 'SHA-256';
@@ -245,17 +224,6 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
     final prefs = _prefs;
     if (prefs == null) return;
 
-    Future<void> setOrRemove(String key, String? value) async {
-      if (value != null && value.isNotEmpty) {
-        await prefs.setString(key, value);
-      } else {
-        await prefs.remove(key);
-      }
-    }
-
-    await setOrRemove(_prefCACertPem, _caCertPem);
-    await setOrRemove(_prefCAKeyPem, _caKeyPem);
-    await setOrRemove(_prefCSRPem, _csrPem);
     await prefs.setInt(_prefDays, _validityDays);
     await prefs.setString(_prefSigAlgo, _signatureAlgorithm);
     await prefs.setString(_prefSerial, _serialController.text);

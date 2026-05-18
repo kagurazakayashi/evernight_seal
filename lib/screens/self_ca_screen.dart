@@ -108,7 +108,6 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
   int _selectedResultTab = 0;
 
   // ── SharedPreferences key 常數 ──
-  static const _prefPrivateKeyPem = 'selfCA_privateKeyPem';
   static const _prefCN = 'selfCA_cn';
   static const _prefO = 'selfCA_o';
   static const _prefOU = 'selfCA_ou';
@@ -150,11 +149,6 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
     _prefs = prefs;
 
     setState(() {
-      final pem = prefs.getString(_prefPrivateKeyPem);
-      if (pem != null && pem.isNotEmpty) {
-        _privateKeyPem = pem;
-        _detectKeyInfo();
-      }
       _cnController.text = prefs.getString(_prefCN) ?? '';
       _oController.text = prefs.getString(_prefO) ?? '';
       _ouController.text = prefs.getString(_prefOU) ?? '';
@@ -220,11 +214,6 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
     final prefs = _prefs;
     if (prefs == null) return;
 
-    if (_privateKeyPem != null) {
-      await prefs.setString(_prefPrivateKeyPem, _privateKeyPem!);
-    } else {
-      await prefs.remove(_prefPrivateKeyPem);
-    }
     await prefs.setString(_prefCN, _cnController.text);
     await prefs.setString(_prefO, _oController.text);
     await prefs.setString(_prefOU, _ouController.text);

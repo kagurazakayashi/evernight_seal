@@ -84,7 +84,6 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
   bool _isGenerating = false;
 
   // ── SharedPreferences key 常數 ──
-  static const _prefPrivateKeyPem = 'csr_privateKeyPem';
   static const _prefCN = 'csr_cn';
   static const _prefO = 'csr_o';
   static const _prefOU = 'csr_ou';
@@ -119,11 +118,6 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
     _prefs = prefs;
 
     setState(() {
-      final pem = prefs.getString(_prefPrivateKeyPem);
-      if (pem != null && pem.isNotEmpty) {
-        _privateKeyPem = pem;
-        _detectKeyInfo();
-      }
       _cnController.text = prefs.getString(_prefCN) ?? '';
       _oController.text = prefs.getString(_prefO) ?? '';
       _ouController.text = prefs.getString(_prefOU) ?? '';
@@ -156,11 +150,6 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
     final prefs = _prefs;
     if (prefs == null) return;
 
-    if (_privateKeyPem != null) {
-      await prefs.setString(_prefPrivateKeyPem, _privateKeyPem!);
-    } else {
-      await prefs.remove(_prefPrivateKeyPem);
-    }
     await prefs.setString(_prefCN, _cnController.text);
     await prefs.setString(_prefO, _oController.text);
     await prefs.setString(_prefOU, _ouController.text);

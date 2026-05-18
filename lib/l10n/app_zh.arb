@@ -128,7 +128,7 @@
   "selfCASANPlaceholder": "例如：example.com",
   "selfCAPrivateKey": "私钥",
   "selfCAPrivateKeyHint": "粘贴私钥 PEM 或加载密钥文件...",
-  "selfCAPrivateKeyLoad": "加载密钥文件",
+  "selfCAPrivateKeyLoad": "打开密钥文件",
   "selfCAKeyRequired": "需要加载私钥才能生成证书。",
   "selfCAKeyLoaded": "已加载密钥",
   "selfCAKeyNotLoaded": "尚未加载密钥",
@@ -167,8 +167,8 @@
   "issueCertCACertHint": "在此粘贴 CA 证书 PEM...",
   "issueCertCSRHint": "在此粘贴 CSR PEM...",
   "issueCertIsCA": "是否为 CA",
-  "issueCertLoadCACertFile": "加载 CA 证书",
-  "issueCertLoadCSRFile": "加载 CSR 文件",
+  "issueCertLoadCACertFile": "打开 CA 证书文件",
+  "issueCertLoadCSRFile": "打开 CSR 文件",
   "issueCertLoadAllRecent": "一键加载全部",
   "issueCertClearAll": "一键移除全部",
 
@@ -180,7 +180,7 @@
   "mergeCertAddEntry": "添加证书",
   "mergeCertHint": "在此粘贴证书 PEM...",
   "mergeCertCertLoaded": "已加载证书",
-  "mergeCertLoadFile": "加载文件",
+  "mergeCertLoadFile": "打开文件",
   "mergeCertLoadAllRecent": "一键加载全部",
   "mergeCertClearAll": "一键移除全部",
   "mergeCertUseLastCACert": "使用 CA 证书",
@@ -198,5 +198,32 @@
     "placeholders": {
       "index": { "type": "int" }
     }
-  }
+  },
+
+  "menuVerify": "验证校验",
+  "menuVerifyDesc": "验证证书与私钥是否为匹配的密钥对",
+  "verifySectionCert": "证书",
+  "verifySectionKey": "私钥",
+  "verifyLoadCertFile": "打开证书文件",
+  "verifyLoadKeyFile": "打开私钥文件",
+  "verifyCertHint": "在此粘贴证书 PEM...",
+  "verifyKeyHint": "在此粘贴私钥 PEM...",
+  "verifyCertLoaded": "已加载证书",
+  "verifyKeyLoaded": "已加载私钥",
+  "verifyButton": "验证匹配",
+  "verifyClear": "清除全部",
+  "verifyResultMatched": "密钥对匹配",
+  "verifyResultMismatched": "密钥对不匹配",
+  "verifyResultError": "验证错误",
+  "verifyMatchedDesc": "证书与私钥是匹配的密钥对。",
+  "verifyMismatchedDesc": "证书与私钥不匹配。",
+  "verifyCertInfo": "证书",
+  "verifyKeyInfo": "私钥",
+  "verifyNoData": "加载证书和私钥，然后点击验证来检查它们是否匹配。",
+  "verifyUseMergedCert": "使用合并的证书",
+  "verifyUseCreatedKey": "使用创建的密钥",
+  "verifyLoadAllRecent": "一键加载全部",
+  "verifyClearAll": "一键移除全部",
+  "certViewKeyMatched": "密钥匹配",
+  "certViewKeyMismatched": "密钥不匹配"
 }

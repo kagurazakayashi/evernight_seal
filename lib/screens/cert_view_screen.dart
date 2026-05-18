@@ -22,6 +22,7 @@ class CertViewScreenState extends State<CertViewScreen> {
 
   CertParseResult? _result;
   PrivateKeyInfo? _privateKey;
+  KeyPairMatchResult? _keyMatchResult;
   String? _errorMessage;
   bool _isLoading = false;
   String? _loadedFileName;
@@ -88,6 +89,7 @@ class CertViewScreenState extends State<CertViewScreen> {
         _rawFileBytes = null;
         _expandedIndices.clear();
         _privateKey = pk;
+        _computeKeyMatch();
       });
     } catch (e) {
       setState(() {
@@ -229,6 +231,7 @@ class CertViewScreenState extends State<CertViewScreen> {
       _isLoading = false;
       _expandedIndices.clear();
       _privateKey = pk;
+      _computeKeyMatch();
     });
   }
 
@@ -313,6 +316,7 @@ class CertViewScreenState extends State<CertViewScreen> {
       _pemController.clear();
       _result = null;
       _privateKey = null;
+      _keyMatchResult = null;
       _errorMessage = null;
       _isLoading = false;
       _loadedFileName = null;
@@ -320,6 +324,28 @@ class CertViewScreenState extends State<CertViewScreen> {
       _showPasteArea = false;
       _expandedIndices.clear();
     });
+  }
+
+  /// 當同時存在憑證與私鑰時，自動計算配對結果
+  void _computeKeyMatch() {
+    if (_result == null ||
+        _result!.certificates.isEmpty ||
+        _privateKey == null ||
+        _privateKey!.isEncrypted ||
+        _privateKey!.pemText == null) {
+      _keyMatchResult = null;
+      return;
+    }
+    try {
+      _keyMatchResult = CertificateService.matchKeyPair(
+        cert: _result!.certificates.first,
+        privateKeyPem: _privateKey!.pemText!,
+      );
+      debugPrint('[CertViewScreen] 金鑰配對: ${_keyMatchResult!.status}');
+    } catch (e) {
+      debugPrint('[CertViewScreen] 金鑰配對檢查失敗: $e');
+      _keyMatchResult = null;
+    }
   }
 
   // ---- UI ----
@@ -557,6 +583,10 @@ class CertViewScreenState extends State<CertViewScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              const Spacer(),
+              // 金鑰配對匹配徽章
+              if (_keyMatchResult != null)
+                _buildMatchBadge(l10n, _keyMatchResult!),
             ],
           ),
           const SizedBox(height: 8),
@@ -594,6 +624,45 @@ class CertViewScreenState extends State<CertViewScreen> {
               _DetailRow(label: l10n.certViewExponent, value: pk.publicExponent.toString()),
             ],
           ],
+        ],
+      ),
+    );
+  }
+
+  /// 建構金鑰配對匹配狀態徽章
+  Widget _buildMatchBadge(AppLocalizations l10n, KeyPairMatchResult result) {
+    final bool isMatched = result.status == KeyMatchStatus.matched;
+    final bool isError = result.status == KeyMatchStatus.error;
+
+    // 錯誤狀態不顯示徽章
+    if (isError) return const SizedBox.shrink();
+
+    final Color color = isMatched ? AppColors.success : AppColors.error;
+    final IconData icon = isMatched ? Icons.link : Icons.link_off;
+    final String label = isMatched
+        ? l10n.certViewKeyMatched
+        : l10n.certViewKeyMismatched;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(3),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

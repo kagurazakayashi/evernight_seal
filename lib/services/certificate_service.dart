@@ -65,6 +65,39 @@ class PrivateKeyInfo {
   });
 }
 
+/// 金鑰配對比對狀態
+enum KeyMatchStatus { matched, mismatched, error }
+
+/// 金鑰配對比對結果
+class KeyPairMatchResult {
+  /// 比對狀態
+  final KeyMatchStatus status;
+
+  /// 描述訊息（錯誤或不匹配原因）
+  final String? message;
+
+  /// 憑證公鑰演算法
+  final String? certAlgorithm;
+
+  /// 私鑰演算法
+  final String? keyAlgorithm;
+
+  /// 憑證公鑰長度
+  final int? certKeySize;
+
+  /// 私鑰長度
+  final int? keyKeySize;
+
+  const KeyPairMatchResult({
+    required this.status,
+    this.message,
+    this.certAlgorithm,
+    this.keyAlgorithm,
+    this.certKeySize,
+    this.keyKeySize,
+  });
+}
+
 /// 憑證服務層 - 封裝 basic_utils 的憑證解析功能
 class CertificateService {
   /// 從 PEM 文字解析憑證（支援單一憑證、多個 PEM 區塊、PKCS#7）
@@ -517,6 +550,168 @@ class CertificateService {
       'brainpoolp512r1': 512, 'brainpoolp512t1': 512,
     };
     return m[curveName];
+  }
+
+  // ---- 金鑰配對比對 ----
+
+  /// 將十六進位字串轉換為位元組陣列（等效 basic_utils 內部的 _stringAsBytes）
+  static Uint8List _hexToBytes(String hex) {
+    final bytes = <int>[];
+    for (var i = 0; i + 1 < hex.length; i += 2) {
+      bytes.add(int.parse(hex.substring(i, i + 2), radix: 16));
+    }
+    return Uint8List.fromList(bytes);
+  }
+
+  /// 比對憑證與私鑰是否為配對的金鑰對
+  ///
+  /// 支援 RSA 與 EC 演算法。透過比對憑證公鑰與私鑰推導出的公鑰來判斷是否匹配。
+  static KeyPairMatchResult matchKeyPair({
+    required X509CertificateData cert,
+    required String privateKeyPem,
+  }) {
+    try {
+      final spki = cert.tbsCertificate?.subjectPublicKeyInfo;
+      if (spki == null) {
+        return const KeyPairMatchResult(
+          status: KeyMatchStatus.error,
+          message: 'Certificate has no public key info',
+        );
+      }
+
+      final certAlgo = spki.algorithmReadableName ?? spki.algorithm ?? '';
+      final certKeySize = spki.length;
+
+      // 判斷私鑰類型
+      if (isPrivateKeyEncrypted(privateKeyPem)) {
+        return const KeyPairMatchResult(
+          status: KeyMatchStatus.error,
+          message: 'Private key is encrypted; cannot verify match',
+        );
+      }
+
+      final keyType = CryptoUtils.getPrivateKeyType(privateKeyPem);
+
+      // 演算法類型不匹配的快速判斷
+      final certIsRsa = certAlgo.toUpperCase().contains('RSA');
+      final certIsEc = certAlgo.toUpperCase().contains('EC') ||
+          certAlgo.toUpperCase().contains('ECDSA');
+      final keyIsRsa = keyType == 'RSA' || keyType == 'RSA_PKCS1';
+      final keyIsEc = keyType == 'ECC';
+
+      if ((certIsRsa && !keyIsRsa) || (certIsEc && !keyIsEc)) {
+        return KeyPairMatchResult(
+          status: KeyMatchStatus.mismatched,
+          message: 'Algorithm mismatch: cert=$certAlgo, key=$keyType',
+          certAlgorithm: certAlgo,
+          keyAlgorithm: keyType,
+          certKeySize: certKeySize,
+        );
+      }
+
+      if (keyIsRsa) {
+        return _matchRsa(cert, privateKeyPem, keyType, certAlgo, certKeySize);
+      } else if (keyIsEc) {
+        return _matchEc(cert, privateKeyPem, certAlgo, certKeySize);
+      }
+
+      return KeyPairMatchResult(
+        status: KeyMatchStatus.error,
+        message: 'Unsupported key type: $keyType',
+        certAlgorithm: certAlgo,
+        keyAlgorithm: keyType,
+      );
+    } catch (e) {
+      return KeyPairMatchResult(
+        status: KeyMatchStatus.error,
+        message: e.toString(),
+      );
+    }
+  }
+
+  /// RSA 金鑰配對比對：比較模數 (modulus)
+  static KeyPairMatchResult _matchRsa(
+    X509CertificateData cert,
+    String privateKeyPem,
+    String keyType,
+    String certAlgo,
+    int? certKeySize,
+  ) {
+    final rsaPriv = keyType == 'RSA_PKCS1'
+        ? CryptoUtils.rsaPrivateKeyFromPemPkcs1(privateKeyPem)
+        : CryptoUtils.rsaPrivateKeyFromPem(privateKeyPem);
+    final privModulus = rsaPriv.n;
+    final privKeySize = privModulus?.bitLength;
+
+    // 從憑證的 SubjectPublicKeyInfo 提取 RSA 公鑰
+    final spki = cert.tbsCertificate!.subjectPublicKeyInfo;
+    final pubKeyHex = spki.bytes;
+    if (pubKeyHex == null || pubKeyHex.isEmpty) {
+      return KeyPairMatchResult(
+        status: KeyMatchStatus.error,
+        message: 'Certificate public key bytes not available',
+        certAlgorithm: certAlgo,
+        keyAlgorithm: 'RSA',
+        certKeySize: certKeySize,
+        keyKeySize: privKeySize,
+      );
+    }
+
+    final pubKeyBytes = _hexToBytes(pubKeyHex);
+    final rsaPub = CryptoUtils.rsaPublicKeyFromDERBytes(pubKeyBytes);
+
+    final matched = rsaPub.modulus == privModulus;
+    return KeyPairMatchResult(
+      status: matched ? KeyMatchStatus.matched : KeyMatchStatus.mismatched,
+      message: matched ? null : 'RSA modulus does not match',
+      certAlgorithm: certAlgo,
+      keyAlgorithm: 'RSA',
+      certKeySize: certKeySize ?? rsaPub.modulus?.bitLength,
+      keyKeySize: privKeySize,
+    );
+  }
+
+  /// EC 金鑰配對比對：比較公鑰點 Q
+  static KeyPairMatchResult _matchEc(
+    X509CertificateData cert,
+    String privateKeyPem,
+    String certAlgo,
+    int? certKeySize,
+  ) {
+    final ecPriv = CryptoUtils.ecPrivateKeyFromPem(privateKeyPem);
+    final privCurve = ecPriv.parameters?.domainName;
+    final privKeySize = _ecCurveBitLength(privCurve);
+
+    // 從私鑰推導公鑰點 Q = d * G
+    final derivedQ = ecPriv.parameters!.G * ecPriv.d;
+
+    // 從憑證的 SubjectPublicKeyInfo 提取 EC 公鑰
+    final spki = cert.tbsCertificate!.subjectPublicKeyInfo;
+    final pubKeyHex = spki.bytes;
+    if (pubKeyHex == null || pubKeyHex.isEmpty) {
+      return KeyPairMatchResult(
+        status: KeyMatchStatus.error,
+        message: 'Certificate public key bytes not available',
+        certAlgorithm: certAlgo,
+        keyAlgorithm: 'EC',
+        certKeySize: certKeySize,
+        keyKeySize: privKeySize,
+      );
+    }
+
+    final pubKeyBytes = _hexToBytes(pubKeyHex);
+    final ecPub = CryptoUtils.ecPublicKeyFromDerBytes(pubKeyBytes);
+
+    // 比較公鑰點座標
+    final matched = derivedQ?.x == ecPub.Q?.x && derivedQ?.y == ecPub.Q?.y;
+    return KeyPairMatchResult(
+      status: matched ? KeyMatchStatus.matched : KeyMatchStatus.mismatched,
+      message: matched ? null : 'EC public key point does not match',
+      certAlgorithm: certAlgo,
+      keyAlgorithm: 'EC ($privCurve)',
+      certKeySize: certKeySize,
+      keyKeySize: privKeySize,
+    );
   }
 
   /// 解析未加密的私鑰 PEM

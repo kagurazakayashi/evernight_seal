@@ -128,7 +128,7 @@
   "selfCASANPlaceholder": "例如：example.com",
   "selfCAPrivateKey": "私鑰",
   "selfCAPrivateKeyHint": "貼上私鑰 PEM 或載入金鑰檔案...",
-  "selfCAPrivateKeyLoad": "載入金鑰檔案",
+  "selfCAPrivateKeyLoad": "開啟金鑰檔案",
   "selfCAKeyRequired": "需要載入私鑰才能產生憑證。",
   "selfCAKeyLoaded": "已載入金鑰",
   "selfCAKeyNotLoaded": "尚未載入金鑰",
@@ -167,8 +167,8 @@
   "issueCertCACertHint": "在此貼上 CA 憑證 PEM...",
   "issueCertCSRHint": "在此貼上 CSR PEM...",
   "issueCertIsCA": "是否為 CA",
-  "issueCertLoadCACertFile": "載入 CA 憑證",
-  "issueCertLoadCSRFile": "載入 CSR 檔案",
+  "issueCertLoadCACertFile": "開啟 CA 憑證檔案",
+  "issueCertLoadCSRFile": "開啟 CSR 檔案",
   "issueCertLoadAllRecent": "一鍵載入全部",
   "issueCertClearAll": "一鍵移除全部",
 
@@ -180,7 +180,7 @@
   "mergeCertAddEntry": "新增憑證",
   "mergeCertHint": "在此貼上憑證 PEM...",
   "mergeCertCertLoaded": "已載入憑證",
-  "mergeCertLoadFile": "載入檔案",
+  "mergeCertLoadFile": "開啟檔案",
   "mergeCertLoadAllRecent": "一鍵載入全部",
   "mergeCertClearAll": "一鍵移除全部",
   "mergeCertUseLastCACert": "使用 CA 憑證",
@@ -198,5 +198,32 @@
     "placeholders": {
       "index": { "type": "int" }
     }
-  }
+  },
+
+  "menuVerify": "驗證校驗",
+  "menuVerifyDesc": "驗證憑證與私鑰是否為配對的金鑰對",
+  "verifySectionCert": "憑證",
+  "verifySectionKey": "私鑰",
+  "verifyLoadCertFile": "開啟憑證檔案",
+  "verifyLoadKeyFile": "開啟私鑰檔案",
+  "verifyCertHint": "在此貼上憑證 PEM...",
+  "verifyKeyHint": "在此貼上私鑰 PEM...",
+  "verifyCertLoaded": "已載入憑證",
+  "verifyKeyLoaded": "已載入私鑰",
+  "verifyButton": "驗證匹配",
+  "verifyClear": "清除全部",
+  "verifyResultMatched": "金鑰對匹配",
+  "verifyResultMismatched": "金鑰對不匹配",
+  "verifyResultError": "驗證錯誤",
+  "verifyMatchedDesc": "憑證與私鑰是配對的金鑰對。",
+  "verifyMismatchedDesc": "憑證與私鑰不匹配。",
+  "verifyCertInfo": "憑證",
+  "verifyKeyInfo": "私鑰",
+  "verifyNoData": "載入憑證與私鑰，然後點擊驗證來檢查它們是否匹配。",
+  "verifyUseMergedCert": "使用合併的憑證",
+  "verifyUseCreatedKey": "使用建立的金鑰",
+  "verifyLoadAllRecent": "一鍵載入全部",
+  "verifyClearAll": "一鍵移除全部",
+  "certViewKeyMatched": "金鑰匹配",
+  "certViewKeyMismatched": "金鑰不匹配"
 }

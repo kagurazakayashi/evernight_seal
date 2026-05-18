@@ -9,6 +9,7 @@
 - 產生 RSA 或 ECDSA 自簽名根憑證（Root CA）
 - 產生伺服器憑證（Server Certificate）與對應私密金鑰
 - 支援 SAN（Subject Alternative Name）自訂
+- 驗證憑證與私密金鑰配對匹配
 - 匯出標準 PEM 格式檔案
 - 深色新擬物化（Neumorphism）介面設計
 

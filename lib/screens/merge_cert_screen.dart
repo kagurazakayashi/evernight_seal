@@ -26,12 +26,16 @@ class MergeCertScreen extends StatefulWidget {
   /// 查看詳細資訊的回呼
   final ValueChanged<String>? onViewDetails;
 
+  /// 當合併完成時回呼，傳出合併結果 PEM 文字
+  final ValueChanged<String>? onMerged;
+
   const MergeCertScreen({
     super.key,
     this.lastGeneratedCACertPem,
     this.lastIssuedCertPem,
     this.lastGeneratedKeyPem,
     this.onViewDetails,
+    this.onMerged,
   });
 
   @override
@@ -320,6 +324,7 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
       }
 
       setState(() => _resultPem = result);
+      widget.onMerged?.call(result);
       debugPrint('[MergeCertScreen] 合併完成');
     } catch (e) {
       debugPrint('[MergeCertScreen] 合併失敗: $e');
