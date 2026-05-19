@@ -9,12 +9,16 @@ class NavItem {
     required this.subtitle,
     required this.icon,
     required this.page,
+    this.badge,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
   final Widget page;
+
+  /// 圖示右下角數字角標（null 則不顯示）
+  final String? badge;
 }
 
 /// 響應式中斷點
@@ -120,7 +124,7 @@ class _SidebarColumn extends StatelessWidget {
             children: [
               for (int i = 0; i < items.length; i++) ...[
                 _SidebarMenuItem(item: items[i], index: i, isSelected: i == selectedIndex, compact: compact, onTap: () => onItemSelected(i)),
-                if (i == 4) Padding(
+                if (i == 0 || i == 7) Padding(
                   padding: EdgeInsets.symmetric(vertical: compact ? 6 : 8),
                   child: Divider(color: AppColors.primaryDark.withValues(alpha: 0.5), indent: compact ? 12 : 0, endIndent: compact ? 12 : 0),
                 ),
@@ -128,7 +132,6 @@ class _SidebarColumn extends StatelessWidget {
             ],
           ),
         ),
-        if (!compact) Text('v1.0.0', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textHint)),
         SizedBox(height: compact ? 8 : 12),
       ],
     );
@@ -156,7 +159,7 @@ class _MobileSideMenu extends StatelessWidget {
             children: [
               for (int i = 0; i < items.length; i++) ...[
                 _SidebarMenuItem(item: items[i], index: i, isSelected: i == selectedIndex, compact: false, onTap: () => onItemSelected(i)),
-                if (i == 4) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Divider(color: AppColors.primaryDark.withValues(alpha: 0.5), height: 1)),
+                if (i == 0 || i == 7) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Divider(color: AppColors.primaryDark.withValues(alpha: 0.5), height: 1)),
               ],
             ],
           ),
@@ -238,7 +241,7 @@ class _FullItemContent extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _IconCircle(icon: item.icon, isSelected: isSelected),
+          _IconCircle(icon: item.icon, isSelected: isSelected, badge: item.badge),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -266,22 +269,60 @@ class _CompactItemContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: item.title,
-      child: const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: _IconCircle(icon: Icons.circle, isSelected: false)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Center(child: _IconCircle(icon: item.icon, isSelected: isSelected, badge: item.badge)),
+      ),
     );
   }
 }
 
 class _IconCircle extends StatelessWidget {
-  const _IconCircle({required this.icon, required this.isSelected});
+  const _IconCircle({required this.icon, required this.isSelected, this.badge});
   final IconData icon;
   final bool isSelected;
+  final String? badge;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final circle = Container(
       width: 36, height: 36,
       decoration: BoxDecoration(shape: BoxShape.circle, color: isSelected ? AppColors.accent : AppColors.surfaceLight),
       child: Icon(icon, color: isSelected ? AppColors.textPrimary : AppColors.textSecondary, size: 20),
+    );
+
+    if (badge == null) return circle;
+
+    return SizedBox(
+      width: 36, height: 36,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          circle,
+          Positioned(
+            right: -4, bottom: -4,
+            child: Container(
+              width: 16, height: 16,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.surface, width: 1.5),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                badge!,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  height: 1,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

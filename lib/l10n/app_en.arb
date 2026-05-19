@@ -108,7 +108,7 @@
   "selfCAStateHint": "e.g. Beijing",
   "selfCACountry": "Country (C)",
   "selfCACountryHint": "e.g. CN",
-  "selfCADays": "Validity (Days)",
+  "selfCADays": "Validity",
   "selfCASignatureAlgorithm": "Signature Algorithm",
   "selfCASerialNumber": "Serial Number",
   "selfCASerialNumberHint": "Auto-generated if empty",
@@ -228,5 +228,7 @@
   "verifyLoadAllRecent": "Load All Recent",
   "verifyClearAll": "Clear All",
   "certViewKeyMatched": "Key Matched",
-  "certViewKeyMismatched": "Key Mismatched"
+  "certViewKeyMismatched": "Key Mismatched",
+  "copyDNFromCSR": "Copy from CSR page",
+  "copyDNFromCA": "Copy from CA page"
 }

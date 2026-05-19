@@ -105,7 +105,7 @@
   "selfCAStateHint": "例如：北京",
   "selfCACountry": "国家 (C)",
   "selfCACountryHint": "例如：CN",
-  "selfCADays": "有效期 (天)",
+  "selfCADays": "有效期",
   "selfCASignatureAlgorithm": "签名算法",
   "selfCASerialNumber": "序列号",
   "selfCASerialNumberHint": "留空则自动生成",
@@ -225,5 +225,7 @@
   "verifyLoadAllRecent": "一键加载全部",
   "verifyClearAll": "一键移除全部",
   "certViewKeyMatched": "密钥匹配",
-  "certViewKeyMismatched": "密钥不匹配"
+  "certViewKeyMismatched": "密钥不匹配",
+  "copyDNFromCSR": "从证书请求页中复制",
+  "copyDNFromCA": "从 CA 证书页中复制"
 }

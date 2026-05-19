@@ -464,7 +464,7 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
                   _buildPrivateKeySection(l10n),
 
                   const SizedBox(height: 16),
-                  _buildSectionHeader(l10n.selfCASectionSubject),
+                  _buildSubjectDNHeader(l10n),
                   const SizedBox(height: 8),
                   _buildSubjectDN(l10n),
 
@@ -526,6 +526,57 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
         ],
       ),
     );
+  }
+
+  /// 主題 DN 區段標題（含「從 CA 複製」按鈕）
+  Widget _buildSubjectDNHeader(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 3,
+            height: 14,
+            decoration: BoxDecoration(
+              color: AppColors.primaryDark.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            l10n.selfCASectionSubject,
+            style: const TextStyle(
+              color: AppColors.textHint,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.0,
+            ),
+          ),
+          const Spacer(),
+          _SmallOutlineButton(
+            icon: Icons.content_copy_outlined,
+            label: l10n.copyDNFromCA,
+            onPressed: _copyDNFromCA,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 從自簽名 CA 畫面的 SharedPreferences 複製主題 DN 欄位
+  void _copyDNFromCA() {
+    final prefs = _prefs;
+    if (prefs == null) return;
+    debugPrint('[CreateCSRScreen] 從 CA 複製主題 DN');
+    setState(() {
+      _cnController.text = prefs.getString('selfCA_cn') ?? '';
+      _oController.text = prefs.getString('selfCA_o') ?? '';
+      _ouController.text = prefs.getString('selfCA_ou') ?? '';
+      _lController.text = prefs.getString('selfCA_l') ?? '';
+      _stController.text = prefs.getString('selfCA_st') ?? '';
+      _cController.text = prefs.getString('selfCA_c') ?? '';
+    });
+    _savePreferences();
   }
 
   /// 小標籤（欄位標題）

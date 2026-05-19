@@ -603,7 +603,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
                   _buildPrivateKeySection(l10n),
 
                   const SizedBox(height: 16),
-                  _buildSectionHeader(l10n.selfCASectionSubject),
+                  _buildSubjectDNHeader(l10n),
                   const SizedBox(height: 8),
                   _buildSubjectDN(l10n),
 
@@ -671,6 +671,57 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
         ],
       ),
     );
+  }
+
+  /// 主題 DN 區段標題（含「從 CSR 複製」按鈕）
+  Widget _buildSubjectDNHeader(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 3,
+            height: 14,
+            decoration: BoxDecoration(
+              color: AppColors.primaryDark.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            l10n.selfCASectionSubject,
+            style: const TextStyle(
+              color: AppColors.textHint,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.0,
+            ),
+          ),
+          const Spacer(),
+          _SmallOutlineButton(
+            icon: Icons.content_copy_outlined,
+            label: l10n.copyDNFromCSR,
+            onPressed: _copyDNFromCSR,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 從 CSR 畫面的 SharedPreferences 複製主題 DN 欄位
+  void _copyDNFromCSR() {
+    final prefs = _prefs;
+    if (prefs == null) return;
+    debugPrint('[SelfCAScreen] 從 CSR 複製主題 DN');
+    setState(() {
+      _cnController.text = prefs.getString('csr_cn') ?? '';
+      _oController.text = prefs.getString('csr_o') ?? '';
+      _ouController.text = prefs.getString('csr_ou') ?? '';
+      _lController.text = prefs.getString('csr_l') ?? '';
+      _stController.text = prefs.getString('csr_st') ?? '';
+      _cController.text = prefs.getString('csr_c') ?? '';
+    });
+    _savePreferences();
   }
 
   /// 小標籤（欄位標題）

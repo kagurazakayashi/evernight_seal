@@ -105,7 +105,7 @@
   "selfCAStateHint": "例如：台灣",
   "selfCACountry": "國家 (C)",
   "selfCACountryHint": "例如：TW",
-  "selfCADays": "有效期 (天)",
+  "selfCADays": "有效期",
   "selfCASignatureAlgorithm": "簽名演算法",
   "selfCASerialNumber": "序號",
   "selfCASerialNumberHint": "留空則自動產生",
@@ -225,5 +225,7 @@
   "verifyLoadAllRecent": "一鍵載入全部",
   "verifyClearAll": "一鍵移除全部",
   "certViewKeyMatched": "金鑰匹配",
-  "certViewKeyMismatched": "金鑰不匹配"
+  "certViewKeyMismatched": "金鑰不匹配",
+  "copyDNFromCSR": "從憑證請求頁中複製",
+  "copyDNFromCA": "從 CA 憑證頁中複製"
 }

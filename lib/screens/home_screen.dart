@@ -69,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: l10n.menuCreateKey,
         subtitle: l10n.menuCreateKeyDesc,
         icon: Icons.vpn_key_outlined,
+        badge: '1',
         page: CreateKeyScreen(
           onKeyGenerated: (pem) => setState(() => _lastGeneratedKeyPem = pem),
           onViewDetails: _navigateToCertView,
@@ -78,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: l10n.menuSelfCA,
         subtitle: l10n.menuSelfCADesc,
         icon: Icons.verified_user_outlined,
+        badge: '2',
         page: SelfCAScreen(
           lastGeneratedKeyPem: _lastGeneratedKeyPem,
           onViewDetails: _navigateToCertView,
@@ -88,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: l10n.menuCreateCSR,
         subtitle: l10n.menuCreateCSRDesc,
         icon: Icons.description_outlined,
+        badge: '3',
         page: CreateCSRScreen(
           lastGeneratedKeyPem: _lastGeneratedKeyPem,
           onViewDetails: _navigateToCertView,
@@ -98,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: l10n.menuIssueCert,
         subtitle: l10n.menuIssueCertDesc,
         icon: Icons.assignment_turned_in_outlined,
+        badge: '4',
         page: IssueCertScreen(
           lastGeneratedKeyPem: _lastGeneratedKeyPem,
           lastGeneratedCACertPem: _lastGeneratedCACertPem,
@@ -110,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: l10n.menuMergeCert,
         subtitle: l10n.menuMergeCertDesc,
         icon: Icons.merge_type_outlined,
+        badge: '5',
         page: MergeCertScreen(
           lastGeneratedCACertPem: _lastGeneratedCACertPem,
           lastIssuedCertPem: _lastIssuedCertPem,
@@ -122,12 +127,13 @@ class _HomeScreenState extends State<HomeScreen> {
         title: l10n.menuVerify,
         subtitle: l10n.menuVerifyDesc,
         icon: Icons.shield_outlined,
+        badge: '6',
         page: VerifyScreen(
           lastGeneratedKeyPem: _lastGeneratedKeyPem,
           lastMergedCertPem: _lastMergedCertPem,
         ),
       ),
-      NavItem(title: l10n.menuExport, subtitle: l10n.menuExportDesc, icon: Icons.file_download_outlined, page: const ExportScreen()),
+      NavItem(title: l10n.menuExport, subtitle: l10n.menuExportDesc, icon: Icons.file_download_outlined, badge: '7', page: const ExportScreen()),
       NavItem(title: l10n.menuKeyManager, subtitle: l10n.menuKeyManagerDesc, icon: Icons.folder_outlined, page: const KeyManagerScreen()),
     ];
   }

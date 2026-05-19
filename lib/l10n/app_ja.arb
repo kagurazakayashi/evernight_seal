@@ -105,7 +105,7 @@
   "selfCAStateHint": "例：東京",
   "selfCACountry": "国 (C)",
   "selfCACountryHint": "例：JP",
-  "selfCADays": "有効期間 (日)",
+  "selfCADays": "有効期間",
   "selfCASignatureAlgorithm": "署名アルゴリズム",
   "selfCASerialNumber": "シリアル番号",
   "selfCASerialNumberHint": "空の場合は自動生成",
@@ -225,5 +225,7 @@
   "verifyLoadAllRecent": "すべて読み込む",
   "verifyClearAll": "すべてクリア",
   "certViewKeyMatched": "鍵が一致",
-  "certViewKeyMismatched": "鍵が不一致"
+  "certViewKeyMismatched": "鍵が不一致",
+  "copyDNFromCSR": "CSR ページからコピー",
+  "copyDNFromCA": "CA ページからコピー"
 }
