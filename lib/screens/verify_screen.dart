@@ -264,12 +264,11 @@ class _VerifyScreenState extends State<VerifyScreen> {
       appBar: AppBar(
         title: Text(l10n.menuVerify),
         actions: [
-          if (_matchResult != null || _errorMessage != null)
-            IconButton(
-              icon: const Icon(Icons.clear_all_outlined),
-              tooltip: l10n.verifyClear,
-              onPressed: _clearAll,
-            ),
+          IconButton(
+            icon: const Icon(Icons.clear_all_outlined),
+            tooltip: l10n.verifyClear,
+            onPressed: _clearAll,
+          ),
         ],
       ),
       body: Container(

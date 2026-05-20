@@ -30,7 +30,7 @@ class IssueCertScreen extends StatefulWidget {
   final ValueChanged<String>? onViewDetails;
 
   /// 當憑證簽發成功時回呼，傳出憑證 PEM 文字
-  final ValueChanged<String>? onCertIssued;
+  final ValueChanged<String?>? onCertIssued;
 
   const IssueCertScreen({
     super.key,
@@ -131,7 +131,10 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
 
   /// 一鍵移除全部：清空所有輸入與結果
   void _clearAll() {
-    debugPrint('[IssueCertScreen] 一鍵移除全部');
+    debugPrint('[IssueCertScreen] 清除所有欄位');
+    for (final entry in _sanEntries) {
+      entry.dispose();
+    }
     setState(() {
       _caCertPem = null;
       _caCertCN = null;
@@ -141,10 +144,21 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       _detectedCurve = null;
       _csrPem = null;
       _csrSubjectCN = null;
+      _validityDays = 365;
+      _signatureAlgorithm = 'SHA-256';
+      _serialController.clear();
+      _keyUsageSet
+        ..clear()
+        ..addAll({KeyUsage.DIGITAL_SIGNATURE, KeyUsage.KEY_ENCIPHERMENT});
+      _extKeyUsageSet.clear();
+      _isCA = false;
+      _pathLenController.clear();
+      _sanEntries.clear();
       _certPem = null;
       _errorMessage = null;
     });
     _savePreferences();
+    widget.onCertIssued?.call(null);
   }
 
   @override
@@ -678,14 +692,6 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
     }
   }
 
-  void _clearResult() {
-    debugPrint('[IssueCertScreen] 清除結果');
-    setState(() {
-      _certPem = null;
-      _errorMessage = null;
-    });
-  }
-
   // ============================================================
   // UI
   // ============================================================
@@ -698,12 +704,11 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       appBar: AppBar(
         title: Text(l10n.menuIssueCert),
         actions: [
-          if (_certPem != null)
-            IconButton(
-              icon: const Icon(Icons.clear_all_outlined),
-              tooltip: l10n.certViewClear,
-              onPressed: _clearResult,
-            ),
+          IconButton(
+            icon: const Icon(Icons.clear_all_outlined),
+            tooltip: l10n.certViewClear,
+            onPressed: _clearAll,
+          ),
         ],
       ),
       body: Container(

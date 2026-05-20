@@ -24,7 +24,7 @@ class SelfCAScreen extends StatefulWidget {
   final ValueChanged<String>? onViewDetails;
 
   /// 當 CA 憑證產生成功時回呼，傳出憑證 PEM 文字
-  final ValueChanged<String>? onCACertGenerated;
+  final ValueChanged<String?>? onCACertGenerated;
 
   const SelfCAScreen({
     super.key,
@@ -562,12 +562,37 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
     }
   }
 
-  void _clearResult() {
-    debugPrint('[SelfCAScreen] 清除結果');
+  void _clearAll() {
+    debugPrint('[SelfCAScreen] 清除所有欄位');
+    for (final entry in _sanEntries) {
+      entry.dispose();
+    }
     setState(() {
+      _privateKeyPem = null;
+      _detectedKeyType = null;
+      _detectedKeySize = null;
+      _detectedCurve = null;
+      _cnController.clear();
+      _oController.clear();
+      _ouController.clear();
+      _lController.clear();
+      _stController.clear();
+      _cController.clear();
+      _validityDays = 3650;
+      _signatureAlgorithm = 'SHA-256';
+      _serialController.clear();
+      _keyUsageSet
+        ..clear()
+        ..addAll({KeyUsage.KEY_CERT_SIGN, KeyUsage.CRL_SIGN});
+      _extKeyUsageSet.clear();
+      _pathLenController.clear();
+      _sanEntries.clear();
       _result = null;
       _errorMessage = null;
+      _selectedResultTab = 0;
     });
+    _savePreferences();
+    widget.onCACertGenerated?.call(null);
   }
 
   // ============================================================
@@ -582,12 +607,11 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
       appBar: AppBar(
         title: Text(l10n.menuSelfCA),
         actions: [
-          if (_result != null)
-            IconButton(
-              icon: const Icon(Icons.clear_all_outlined),
-              tooltip: l10n.certViewClear,
-              onPressed: _clearResult,
-            ),
+          IconButton(
+            icon: const Icon(Icons.clear_all_outlined),
+            tooltip: l10n.certViewClear,
+            onPressed: _clearAll,
+          ),
         ],
       ),
       body: Container(

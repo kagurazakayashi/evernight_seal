@@ -14,7 +14,7 @@ import '../theme/app_colors.dart';
 /// 提供使用者選擇加密演算法（RSA / EC）、金鑰長度或曲線，
 /// 並生成對應的私鑰與公鑰 PEM 格式。
 class CreateKeyScreen extends StatefulWidget {
-  final ValueChanged<String>? onKeyGenerated;
+  final ValueChanged<String?>? onKeyGenerated;
 
   /// 查看詳細資訊的回呼，傳入 PEM 文字後導覽到憑證檢視畫面
   final ValueChanged<String>? onViewDetails;
@@ -167,12 +167,18 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
     }
   }
 
-  void _clearResult() {
-    debugPrint('[CreateKeyScreen] 清除結果');
+  void _clearAll() {
+    debugPrint('[CreateKeyScreen] 清除所有欄位');
     setState(() {
+      _keyType = 'rsa';
+      _rsaKeySize = 2048;
+      _ecCurve = 'prime256v1';
+      _selectedKeyTab = 0;
       _result = null;
       _errorMessage = null;
     });
+    _savePreferences();
+    widget.onKeyGenerated?.call(null);
   }
 
   // ── UI ──
@@ -185,12 +191,11 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
       appBar: AppBar(
         title: Text(l10n.menuCreateKey),
         actions: [
-          if (_result != null)
-            IconButton(
-              icon: const Icon(Icons.clear_all_outlined),
-              tooltip: l10n.certViewClear,
-              onPressed: _clearResult,
-            ),
+          IconButton(
+            icon: const Icon(Icons.clear_all_outlined),
+            tooltip: l10n.certViewClear,
+            onPressed: _clearAll,
+          ),
         ],
       ),
       body: Container(

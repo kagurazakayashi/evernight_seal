@@ -227,5 +227,21 @@
   "certViewKeyMatched": "金鑰匹配",
   "certViewKeyMismatched": "金鑰不匹配",
   "copyDNFromCSR": "從憑證請求頁中複製",
-  "copyDNFromCA": "從 CA 憑證頁中複製"
+  "copyDNFromCA": "從 CA 憑證頁中複製",
+
+  "exportNoData": "暫無可匯出的項目。請先產生金鑰、憑證或 CSR。",
+  "exportPrivateKey": "私鑰",
+  "exportPrivateKeyDesc": "已產生的私鑰 (PEM)",
+  "exportCACert": "CA 憑證",
+  "exportCACertDesc": "自簽名 CA 憑證 (PEM)",
+  "exportCSR": "憑證請求 (CSR)",
+  "exportCSRDesc": "PKCS#10 憑證簽名請求 (PEM)",
+  "exportIssuedCert": "已簽發憑證",
+  "exportIssuedCertDesc": "由 CA 簽發的終端實體憑證 (PEM)",
+  "exportMergedChain": "合併憑證鏈",
+  "exportMergedChainDesc": "合併後的憑證鏈 (PEM / PKCS#7)",
+  "exportNotAvailable": "尚未產生",
+  "exportSave": "儲存檔案",
+  "exportCopy": "複製 PEM",
+  "exportSaveAll": "全部儲存"
 }

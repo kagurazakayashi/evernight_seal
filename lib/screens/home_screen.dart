@@ -133,7 +133,19 @@ class _HomeScreenState extends State<HomeScreen> {
           lastMergedCertPem: _lastMergedCertPem,
         ),
       ),
-      NavItem(title: l10n.menuExport, subtitle: l10n.menuExportDesc, icon: Icons.file_download_outlined, badge: '7', page: const ExportScreen()),
+      NavItem(
+        title: l10n.menuExport,
+        subtitle: l10n.menuExportDesc,
+        icon: Icons.file_download_outlined,
+        badge: '7',
+        page: ExportScreen(
+          lastGeneratedKeyPem: _lastGeneratedKeyPem,
+          lastGeneratedCACertPem: _lastGeneratedCACertPem,
+          lastGeneratedCSRPem: _lastGeneratedCSRPem,
+          lastIssuedCertPem: _lastIssuedCertPem,
+          lastMergedCertPem: _lastMergedCertPem,
+        ),
+      ),
       NavItem(title: l10n.menuKeyManager, subtitle: l10n.menuKeyManagerDesc, icon: Icons.folder_outlined, page: const KeyManagerScreen()),
     ];
   }

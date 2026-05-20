@@ -22,7 +22,7 @@ class CreateCSRScreen extends StatefulWidget {
   final ValueChanged<String>? onViewDetails;
 
   /// 當 CSR 產生成功時回呼，傳出 CSR PEM 文字
-  final ValueChanged<String>? onCSRGenerated;
+  final ValueChanged<String?>? onCSRGenerated;
 
   const CreateCSRScreen({
     super.key,
@@ -423,12 +423,29 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
     }
   }
 
-  void _clearResult() {
-    debugPrint('[CreateCSRScreen] 清除結果');
+  void _clearAll() {
+    debugPrint('[CreateCSRScreen] 清除所有欄位');
+    for (final entry in _sanEntries) {
+      entry.dispose();
+    }
     setState(() {
+      _privateKeyPem = null;
+      _detectedKeyType = null;
+      _detectedKeySize = null;
+      _detectedCurve = null;
+      _cnController.clear();
+      _oController.clear();
+      _ouController.clear();
+      _lController.clear();
+      _stController.clear();
+      _cController.clear();
+      _signatureAlgorithm = 'SHA-256';
+      _sanEntries.clear();
       _csrPem = null;
       _errorMessage = null;
     });
+    _savePreferences();
+    widget.onCSRGenerated?.call(null);
   }
 
   // ============================================================
@@ -443,12 +460,11 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
       appBar: AppBar(
         title: Text(l10n.menuCreateCSR),
         actions: [
-          if (_csrPem != null)
-            IconButton(
-              icon: const Icon(Icons.clear_all_outlined),
-              tooltip: l10n.certViewClear,
-              onPressed: _clearResult,
-            ),
+          IconButton(
+            icon: const Icon(Icons.clear_all_outlined),
+            tooltip: l10n.certViewClear,
+            onPressed: _clearAll,
+          ),
         ],
       ),
       body: Container(

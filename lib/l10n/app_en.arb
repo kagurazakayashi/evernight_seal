@@ -230,5 +230,21 @@
   "certViewKeyMatched": "Key Matched",
   "certViewKeyMismatched": "Key Mismatched",
   "copyDNFromCSR": "Copy from CSR page",
-  "copyDNFromCA": "Copy from CA page"
+  "copyDNFromCA": "Copy from CA page",
+
+  "exportNoData": "No items available for export. Generate keys, certificates or CSR first.",
+  "exportPrivateKey": "Private Key",
+  "exportPrivateKeyDesc": "Generated private key (PEM)",
+  "exportCACert": "CA Certificate",
+  "exportCACertDesc": "Self-signed CA certificate (PEM)",
+  "exportCSR": "Certificate Request (CSR)",
+  "exportCSRDesc": "PKCS#10 certificate signing request (PEM)",
+  "exportIssuedCert": "Issued Certificate",
+  "exportIssuedCertDesc": "CA-signed end entity certificate (PEM)",
+  "exportMergedChain": "Merged Certificate Chain",
+  "exportMergedChainDesc": "Combined certificate chain (PEM / PKCS#7)",
+  "exportNotAvailable": "Not generated yet",
+  "exportSave": "Save File",
+  "exportCopy": "Copy PEM",
+  "exportSaveAll": "Save All"
 }

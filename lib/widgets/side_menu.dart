@@ -132,7 +132,6 @@ class _SidebarColumn extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: compact ? 8 : 12),
       ],
     );
   }

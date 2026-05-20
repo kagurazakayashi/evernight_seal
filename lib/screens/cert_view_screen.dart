@@ -358,12 +358,11 @@ class CertViewScreenState extends State<CertViewScreen> {
       appBar: AppBar(
         title: Text(l10n.menuViewCert),
         actions: [
-          if (_result != null || _errorMessage != null)
-            IconButton(
-              icon: const Icon(Icons.clear_all_outlined),
-              tooltip: l10n.certViewClear,
-              onPressed: _clearAll,
-            ),
+          IconButton(
+            icon: const Icon(Icons.clear_all_outlined),
+            tooltip: l10n.certViewClear,
+            onPressed: _clearAll,
+          ),
         ],
       ),
       body: Container(

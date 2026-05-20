@@ -27,7 +27,7 @@ class MergeCertScreen extends StatefulWidget {
   final ValueChanged<String>? onViewDetails;
 
   /// 當合併完成時回呼，傳出合併結果 PEM 文字
-  final ValueChanged<String>? onMerged;
+  final ValueChanged<String?>? onMerged;
 
   const MergeCertScreen({
     super.key,
@@ -207,7 +207,7 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
 
   /// 一鍵移除全部：清空所有憑證條目、私鑰及結果
   void _clearAll() {
-    debugPrint('[MergeCertScreen] 一鍵移除全部');
+    debugPrint('[MergeCertScreen] 清除所有欄位');
     setState(() {
       _certEntries
         ..clear()
@@ -215,9 +215,11 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
       _includeKey = false;
       _privateKeyPem = null;
       _detectedKeyType = null;
+      _outputFormat = 'PEM';
       _resultPem = null;
       _errorMessage = null;
     });
+    widget.onMerged?.call(null);
   }
 
   // ── 私鑰載入 ──
@@ -386,14 +388,6 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
     }
   }
 
-  void _clearResult() {
-    debugPrint('[MergeCertScreen] 清除結果');
-    setState(() {
-      _resultPem = null;
-      _errorMessage = null;
-    });
-  }
-
   // ============================================================
   // UI
   // ============================================================
@@ -406,12 +400,11 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
       appBar: AppBar(
         title: Text(l10n.menuMergeCert),
         actions: [
-          if (_resultPem != null)
-            IconButton(
-              icon: const Icon(Icons.clear_all_outlined),
-              tooltip: l10n.certViewClear,
-              onPressed: _clearResult,
-            ),
+          IconButton(
+            icon: const Icon(Icons.clear_all_outlined),
+            tooltip: l10n.certViewClear,
+            onPressed: _clearAll,
+          ),
         ],
       ),
       body: Container(

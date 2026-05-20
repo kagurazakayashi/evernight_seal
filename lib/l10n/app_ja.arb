@@ -227,5 +227,21 @@
   "certViewKeyMatched": "鍵が一致",
   "certViewKeyMismatched": "鍵が不一致",
   "copyDNFromCSR": "CSR ページからコピー",
-  "copyDNFromCA": "CA ページからコピー"
+  "copyDNFromCA": "CA ページからコピー",
+
+  "exportNoData": "エクスポート可能な項目がありません。先に鍵、証明書、または CSR を生成してください。",
+  "exportPrivateKey": "秘密鍵",
+  "exportPrivateKeyDesc": "生成済みの秘密鍵 (PEM)",
+  "exportCACert": "CA 証明書",
+  "exportCACertDesc": "自己署名 CA 証明書 (PEM)",
+  "exportCSR": "証明書要求 (CSR)",
+  "exportCSRDesc": "PKCS#10 証明書署名要求 (PEM)",
+  "exportIssuedCert": "発行済み証明書",
+  "exportIssuedCertDesc": "CA 署名のエンドエンティティ証明書 (PEM)",
+  "exportMergedChain": "結合済み証明書チェーン",
+  "exportMergedChainDesc": "結合された証明書チェーン (PEM / PKCS#7)",
+  "exportNotAvailable": "未生成",
+  "exportSave": "ファイルを保存",
+  "exportCopy": "PEM をコピー",
+  "exportSaveAll": "すべて保存"
 }
