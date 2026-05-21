@@ -130,11 +130,12 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
 
   Future<void> _saveKey(String pem, String defaultName) async {
     debugPrint('[CreateKeyScreen] 儲存金鑰檔案: $defaultName');
+    final l10n = AppLocalizations.of(context);
 
     try {
       final bytes = utf8.encode(pem);
       final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: 'Save Key File',
+        dialogTitle: l10n.dialogSaveKeyFile,
         fileName: defaultName,
         type: FileType.any,
         bytes: bytes,
@@ -144,10 +145,9 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
         debugPrint('[CreateKeyScreen] 金鑰已儲存至: $outputPath');
 
         if (mounted) {
-          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${l10n.createKeySave}: $outputPath'),
+              content: Text(l10n.savedToPath(outputPath)),
               duration: const Duration(seconds: 2),
               backgroundColor: AppColors.surface,
             ),
@@ -159,7 +159,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Save failed: $e'),
+            content: Text(l10n.saveFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -283,7 +283,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
         label: l10n.certViewKeySize,
         value: _rsaKeySize,
         items: KeyService.rsaKeySizes,
-        itemLabel: (v) => '$v bits',
+        itemLabel: (v) => l10n.bitsSuffix(v),
         onChanged: (v) {
           debugPrint('[CreateKeyScreen] 選擇 RSA 金鑰長度: $v bits');
           setState(() => _rsaKeySize = v);
@@ -297,7 +297,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
         items: KeyService.ecCurves,
         itemLabel: (v) {
           final bits = KeyService.getEcCurveBitLength(v);
-          return bits != null ? '$v ($bits bits)' : v;
+          return bits != null ? '$v (${l10n.bitsSuffix(bits)})' : v;
         },
         onChanged: (v) {
           debugPrint('[CreateKeyScreen] 選擇 EC 曲線: $v');
@@ -393,7 +393,7 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
               )
             : const Icon(Icons.vpn_key_outlined, size: 20),
         label: Text(
-          _isGenerating ? 'Generating...' : l10n.createKeyGenerate,
+          _isGenerating ? l10n.generatingProgress : l10n.createKeyGenerate,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,

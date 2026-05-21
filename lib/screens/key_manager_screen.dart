@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 
 /// 金鑰管理畫面
@@ -8,12 +9,14 @@ class KeyManagerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('金鑰管理')),
+      appBar: AppBar(title: Text(l10n.menuKeyManager)),
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: const Center(
-          child: Text('金鑰管理 - 待實作', style: TextStyle(color: AppColors.textHint)),
+        child: Center(
+          child: Text(l10n.menuKeyManager, style: const TextStyle(color: AppColors.textHint)),
         ),
       ),
     );

@@ -285,10 +285,11 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
   }
 
   Future<void> _loadCACertFromFile() async {
+    final l10n = AppLocalizations.of(context);
     debugPrint('[IssueCertScreen] 開啟 CA 憑證檔案');
     try {
       final result = await FilePicker.pickFiles(
-        dialogTitle: 'Open CA Certificate File',
+        dialogTitle: l10n.dialogOpenCACertFile,
         type: FileType.any,
         withData: true,
       );
@@ -300,12 +301,12 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       try {
         pem = utf8.decode(bytes);
       } catch (_) {
-        setState(() => _errorMessage = 'Failed to read file as text');
+        setState(() => _errorMessage = l10n.errorReadFileText);
         return;
       }
 
       if (!pem.contains('BEGIN CERTIFICATE')) {
-        setState(() => _errorMessage = 'No valid certificate found in the file');
+        setState(() => _errorMessage = l10n.errorNoCertInFile);
         return;
       }
 
@@ -364,10 +365,11 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
   }
 
   Future<void> _loadCAKeyFromFile() async {
+    final l10n = AppLocalizations.of(context);
     debugPrint('[IssueCertScreen] 開啟 CA 私鑰檔案');
     try {
       final result = await FilePicker.pickFiles(
-        dialogTitle: 'Open CA Private Key File',
+        dialogTitle: l10n.dialogOpenCAKeyFile,
         type: FileType.any,
         withData: true,
       );
@@ -379,13 +381,12 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       try {
         pem = utf8.decode(bytes);
       } catch (_) {
-        setState(() => _errorMessage = 'Failed to read file as text');
+        setState(() => _errorMessage = l10n.errorReadFileText);
         return;
       }
 
       if (!CertificateService.hasPrivateKeyPem(pem)) {
-        setState(
-            () => _errorMessage = 'No valid private key found in the file');
+        setState(() => _errorMessage = l10n.errorNoKeyInFile);
         return;
       }
 
@@ -444,10 +445,11 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
   }
 
   Future<void> _loadCSRFromFile() async {
+    final l10n = AppLocalizations.of(context);
     debugPrint('[IssueCertScreen] 開啟 CSR 檔案');
     try {
       final result = await FilePicker.pickFiles(
-        dialogTitle: 'Open CSR File',
+        dialogTitle: l10n.dialogOpenCSRFile,
         type: FileType.any,
         withData: true,
       );
@@ -459,13 +461,13 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       try {
         pem = utf8.decode(bytes);
       } catch (_) {
-        setState(() => _errorMessage = 'Failed to read file as text');
+        setState(() => _errorMessage = l10n.errorReadFileText);
         return;
       }
 
       if (!pem.contains('BEGIN CERTIFICATE REQUEST') &&
           !pem.contains('BEGIN NEW CERTIFICATE REQUEST')) {
-        setState(() => _errorMessage = 'No valid CSR found in the file');
+        setState(() => _errorMessage = l10n.errorNoCSRInFile);
         return;
       }
 
@@ -509,19 +511,17 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.surface,
-          title: const Text('Certificate Issuance Unavailable',
-              style: TextStyle(color: AppColors.textPrimary)),
-          content: const Text(
-            'The underlying library uses UTCTime (2-digit year) which only '
-            'supports dates through 2049-12-31. Certificate generation is no '
-            'longer possible after this date.',
-            style: TextStyle(color: AppColors.textSecondary),
+          title: Text(l10n.utcTimeIssueTitle,
+              style: const TextStyle(color: AppColors.textPrimary)),
+          content: Text(
+            l10n.utcTimeBody,
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('OK',
-                  style: TextStyle(color: AppColors.primary)),
+              child: Text(l10n.dialogOK,
+                  style: const TextStyle(color: AppColors.primary)),
             ),
           ],
         ),
@@ -562,7 +562,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
         privateKey = CryptoUtils.ecPrivateKeyFromPem(_caKeyPem!);
       } else {
         setState(() {
-          _errorMessage = 'Unsupported key type: $keyType';
+          _errorMessage = l10n.errorUnsupportedKeyType(keyType);
           _isGenerating = false;
         });
         return;
@@ -573,7 +573,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       final caSubject = caCert.tbsCertificate?.subject;
       if (caSubject == null || caSubject.isEmpty) {
         setState(() {
-          _errorMessage = 'Failed to extract issuer DN from CA certificate';
+          _errorMessage = l10n.errorExtractIssuerDN;
           _isGenerating = false;
         });
         return;
@@ -657,11 +657,12 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
   }
 
   Future<void> _savePem(String pem, String defaultName) async {
+    final l10n = AppLocalizations.of(context);
     debugPrint('[IssueCertScreen] 儲存檔案: $defaultName');
     try {
       final bytes = utf8.encode(pem);
       final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: 'Save File',
+        dialogTitle: l10n.dialogSaveFile,
         fileName: defaultName,
         type: FileType.any,
         bytes: bytes,
@@ -672,7 +673,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Saved to: $outputPath'),
+              content: Text(l10n.savedToPath(outputPath)),
               duration: const Duration(seconds: 2),
               backgroundColor: AppColors.surface,
             ),
@@ -684,7 +685,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Save failed: $e'),
+            content: Text(l10n.saveFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -1176,7 +1177,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
           children: KeyUsage.values.map((ku) {
             final selected = _keyUsageSet.contains(ku);
             return _buildCheckboxChip(
-              label: _keyUsageLabel(ku),
+              label: _keyUsageLabel(ku, l10n),
               value: selected,
               onChanged: (v) {
                 debugPrint(
@@ -1212,7 +1213,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
           children: ExtendedKeyUsage.values.map((eku) {
             final selected = _extKeyUsageSet.contains(eku);
             return _buildCheckboxChip(
-              label: _extKeyUsageLabel(eku),
+              label: _extKeyUsageLabel(eku, l10n),
               value: selected,
               onChanged: (v) {
                 debugPrint(
@@ -1291,7 +1292,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            _isCA ? 'true' : 'false',
+                            _isCA ? l10n.boolTrue : l10n.boolFalse,
                             style: TextStyle(
                               color: _isCA
                                   ? AppColors.textPrimary
@@ -1469,7 +1470,7 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
               )
             : const Icon(Icons.assignment_turned_in_outlined, size: 20),
         label: Text(
-          _isGenerating ? 'Issuing...' : l10n.issueCertGenerate,
+          _isGenerating ? l10n.issuingProgress : l10n.issueCertGenerate,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -1784,45 +1785,45 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
 
   // ── 標籤輔助 ──
 
-  String _keyUsageLabel(KeyUsage ku) {
+  String _keyUsageLabel(KeyUsage ku, AppLocalizations l10n) {
     switch (ku) {
       case KeyUsage.DIGITAL_SIGNATURE:
-        return 'Digital Signature';
+        return l10n.kuDigitalSignature;
       case KeyUsage.NON_REPUDIATION:
-        return 'Non-Repudiation';
+        return l10n.kuNonRepudiation;
       case KeyUsage.KEY_ENCIPHERMENT:
-        return 'Key Encipherment';
+        return l10n.kuKeyEncipherment;
       case KeyUsage.DATA_ENCIPHERMENT:
-        return 'Data Encipherment';
+        return l10n.kuDataEncipherment;
       case KeyUsage.KEY_AGREEMENT:
-        return 'Key Agreement';
+        return l10n.kuKeyAgreement;
       case KeyUsage.KEY_CERT_SIGN:
-        return 'Cert Sign';
+        return l10n.kuCertSign;
       case KeyUsage.CRL_SIGN:
-        return 'CRL Sign';
+        return l10n.kuCRLSign;
       case KeyUsage.ENCIPHER_ONLY:
-        return 'Encipher Only';
+        return l10n.kuEncipherOnly;
       case KeyUsage.DECIPHER_ONLY:
-        return 'Decipher Only';
+        return l10n.kuDecipherOnly;
     }
   }
 
-  String _extKeyUsageLabel(ExtendedKeyUsage eku) {
+  String _extKeyUsageLabel(ExtendedKeyUsage eku, AppLocalizations l10n) {
     switch (eku) {
       case ExtendedKeyUsage.SERVER_AUTH:
-        return 'Server Auth';
+        return l10n.ekuServerAuth;
       case ExtendedKeyUsage.CLIENT_AUTH:
-        return 'Client Auth';
+        return l10n.ekuClientAuth;
       case ExtendedKeyUsage.CODE_SIGNING:
-        return 'Code Signing';
+        return l10n.ekuCodeSigning;
       case ExtendedKeyUsage.EMAIL_PROTECTION:
-        return 'Email';
+        return l10n.ekuEmail;
       case ExtendedKeyUsage.TIME_STAMPING:
-        return 'Time Stamping';
+        return l10n.ekuTimeStamping;
       case ExtendedKeyUsage.OCSP_SIGNING:
-        return 'OCSP Signing';
+        return l10n.ekuOCSPSigning;
       case ExtendedKeyUsage.BIMI:
-        return 'BIMI';
+        return l10n.ekuBIMI;
     }
   }
 }

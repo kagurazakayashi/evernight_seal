@@ -201,9 +201,10 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
   /// 從檔案載入私鑰
   Future<void> _loadKeyFromFile() async {
     debugPrint('[CreateCSRScreen] 開啟私鑰檔案');
+    final l10n = AppLocalizations.of(context);
     try {
       final result = await FilePicker.pickFiles(
-        dialogTitle: 'Open Private Key File',
+        dialogTitle: l10n.dialogOpenKeyFile,
         type: FileType.any,
         withData: true,
       );
@@ -217,14 +218,14 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
       try {
         pem = utf8.decode(bytes);
       } catch (_) {
-        setState(() => _errorMessage = 'Failed to read file as text');
+        setState(() => _errorMessage = l10n.errorReadFileText);
         return;
       }
 
       // 檢查是否包含私鑰標頭
       if (!CertificateService.hasPrivateKeyPem(pem)) {
         setState(
-            () => _errorMessage = 'No valid private key found in the file');
+            () => _errorMessage = l10n.errorNoKeyInFile);
         return;
       }
 
@@ -264,17 +265,17 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
       '[CreateCSRScreen] 產生 CSR: cn=${_cnController.text}, '
       'sigAlgo=$_signatureAlgorithm',
     );
+    final l10n = AppLocalizations.of(context);
 
     // 驗證 CN 必填
     final cn = _cnController.text.trim();
     if (cn.isEmpty) {
-      setState(() => _errorMessage = 'Common Name (CN) is required');
+      setState(() => _errorMessage = l10n.errorCNRequired);
       return;
     }
 
     // 驗證私鑰已載入
     if (_privateKeyPem == null || _detectedKeyType == null) {
-      final l10n = AppLocalizations.of(context);
       setState(() => _errorMessage = l10n.csrKeyRequired);
       return;
     }
@@ -306,7 +307,7 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
         publicKey = ECPublicKey(Q, ecPriv.parameters!);
       } else {
         setState(() {
-          _errorMessage = 'Unsupported key type: $keyType';
+          _errorMessage = l10n.errorUnsupportedKeyType(keyType);
           _isGenerating = false;
         });
         return;
@@ -387,11 +388,12 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
 
   Future<void> _savePem(String pem, String defaultName) async {
     debugPrint('[CreateCSRScreen] 儲存檔案: $defaultName');
+    final l10n = AppLocalizations.of(context);
 
     try {
       final bytes = utf8.encode(pem);
       final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: 'Save File',
+        dialogTitle: l10n.dialogSaveFile,
         fileName: defaultName,
         type: FileType.any,
         bytes: bytes,
@@ -403,7 +405,7 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Saved to: $outputPath'),
+              content: Text(l10n.savedToPath(outputPath)),
               duration: const Duration(seconds: 2),
               backgroundColor: AppColors.surface,
             ),
@@ -415,7 +417,7 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Save failed: $e'),
+            content: Text(l10n.saveFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -1020,7 +1022,7 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
               )
             : const Icon(Icons.description_outlined, size: 20),
         label: Text(
-          _isGenerating ? 'Generating...' : l10n.csrGenerate,
+          _isGenerating ? l10n.generatingProgress : l10n.csrGenerate,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,

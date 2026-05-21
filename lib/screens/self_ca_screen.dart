@@ -276,9 +276,10 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
   /// 從檔案載入私鑰
   Future<void> _loadKeyFromFile() async {
     debugPrint('[SelfCAScreen] 開啟私鑰檔案');
+    final l10n = AppLocalizations.of(context);
     try {
       final result = await FilePicker.pickFiles(
-        dialogTitle: 'Open Private Key File',
+        dialogTitle: l10n.dialogOpenKeyFile,
         type: FileType.any,
         withData: true,
       );
@@ -292,14 +293,14 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
       try {
         pem = utf8.decode(bytes);
       } catch (_) {
-        setState(() => _errorMessage = 'Failed to read file as text');
+        setState(() => _errorMessage = l10n.errorReadFileText);
         return;
       }
 
       // 檢查是否包含私鑰標頭
       if (!CertificateService.hasPrivateKeyPem(pem)) {
         setState(
-            () => _errorMessage = 'No valid private key found in the file');
+            () => _errorMessage = l10n.errorNoKeyInFile);
         return;
       }
 
@@ -339,6 +340,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
       '[SelfCAScreen] 產生 CA 憑證: cn=${_cnController.text}, '
       'days=$_validityDays, sigAlgo=$_signatureAlgorithm',
     );
+    final l10n = AppLocalizations.of(context);
 
     // UTCTime 上限檢查：若當前時間已超過 2049 年，無法產生憑證
     final maxDays = getMaxValidityDays();
@@ -347,20 +349,17 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.surface,
-          title: Text('CA Certificate Generation Unavailable',
+          title: Text(l10n.utcTimeCaTitle,
               style: const TextStyle(color: AppColors.textPrimary)),
-          content: const Text(
-            'The underlying library uses UTCTime (2-digit year) which only '
-            'supports dates through 2049-12-31. Certificate generation is no '
-            'longer possible after this date.\n\n'
-            'This limitation comes from the basic_utils dependency.',
-            style: TextStyle(color: AppColors.textSecondary),
+          content: Text(
+            l10n.utcTimeBody,
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('OK',
-                  style: TextStyle(color: AppColors.primary)),
+              child: Text(l10n.dialogOK,
+                  style: const TextStyle(color: AppColors.primary)),
             ),
           ],
         ),
@@ -371,13 +370,12 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
     // 驗證 CN 必填
     final cn = _cnController.text.trim();
     if (cn.isEmpty) {
-      setState(() => _errorMessage = 'Common Name (CN) is required');
+      setState(() => _errorMessage = l10n.errorCNRequired);
       return;
     }
 
     // 驗證私鑰已載入
     if (_privateKeyPem == null || _detectedKeyType == null) {
-      final l10n = AppLocalizations.of(context);
       setState(() => _errorMessage = l10n.selfCAKeyRequired);
       return;
     }
@@ -409,7 +407,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
         publicKey = ECPublicKey(Q, ecPriv.parameters!);
       } else {
         setState(() {
-          _errorMessage = 'Unsupported key type: $keyType';
+          _errorMessage = l10n.errorUnsupportedKeyType(keyType);
           _isGenerating = false;
         });
         return;
@@ -525,11 +523,12 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
 
   Future<void> _savePem(String pem, String defaultName) async {
     debugPrint('[SelfCAScreen] 儲存檔案: $defaultName');
+    final l10n = AppLocalizations.of(context);
 
     try {
       final bytes = utf8.encode(pem);
       final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: 'Save File',
+        dialogTitle: l10n.dialogSaveFile,
         fileName: defaultName,
         type: FileType.any,
         bytes: bytes,
@@ -541,7 +540,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Saved to: $outputPath'),
+              content: Text(l10n.savedToPath(outputPath)),
               duration: const Duration(seconds: 2),
               backgroundColor: AppColors.surface,
       ),
@@ -554,7 +553,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Save failed: $e'),
+            content: Text(l10n.saveFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -785,7 +784,8 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
     if (hasKey) {
       // 已載入金鑰：顯示金鑰資訊與操作
       final typeStr = _detectedKeyType;
-      String desc = typeStr ?? 'Unknown';
+      String desc = typeStr ?? l10n.unknownValue;
+      if (typeStr == 'Unknown') desc = l10n.unknownValue;
       if (_detectedKeySize != null) {
         desc += ' $_detectedKeySize bits';
       }
@@ -1048,7 +1048,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
           children: KeyUsage.values.map((ku) {
             final selected = _keyUsageSet.contains(ku);
             return _buildCheckboxChip(
-              label: _keyUsageLabel(ku),
+              label: _keyUsageLabel(ku, l10n),
               value: selected,
               onChanged: (v) {
                 debugPrint(
@@ -1084,7 +1084,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
           children: ExtendedKeyUsage.values.map((eku) {
             final selected = _extKeyUsageSet.contains(eku);
             return _buildCheckboxChip(
-              label: _extKeyUsageLabel(eku),
+              label: _extKeyUsageLabel(eku, l10n),
               value: selected,
               onChanged: (v) {
                 debugPrint(
@@ -1140,12 +1140,12 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
                   ),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.check_circle, color: AppColors.success, size: 16),
-                    SizedBox(width: 6),
+                    const Icon(Icons.check_circle, color: AppColors.success, size: 16),
+                    const SizedBox(width: 6),
                     Text(
-                      'true',
+                      l10n.boolTrue,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 14,
@@ -1320,7 +1320,7 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
               )
             : const Icon(Icons.verified_user_outlined, size: 20),
         label: Text(
-          _isGenerating ? 'Generating...' : l10n.selfCAGenerate,
+          _isGenerating ? l10n.generatingProgress : l10n.selfCAGenerate,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -1684,45 +1684,45 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
 
   // ── 標籤輔助 ──
 
-  String _keyUsageLabel(KeyUsage ku) {
+  String _keyUsageLabel(KeyUsage ku, AppLocalizations l10n) {
     switch (ku) {
       case KeyUsage.DIGITAL_SIGNATURE:
-        return 'Digital Signature';
+        return l10n.kuDigitalSignature;
       case KeyUsage.NON_REPUDIATION:
-        return 'Non-Repudiation';
+        return l10n.kuNonRepudiation;
       case KeyUsage.KEY_ENCIPHERMENT:
-        return 'Key Encipherment';
+        return l10n.kuKeyEncipherment;
       case KeyUsage.DATA_ENCIPHERMENT:
-        return 'Data Encipherment';
+        return l10n.kuDataEncipherment;
       case KeyUsage.KEY_AGREEMENT:
-        return 'Key Agreement';
+        return l10n.kuKeyAgreement;
       case KeyUsage.KEY_CERT_SIGN:
-        return 'Cert Sign';
+        return l10n.kuCertSign;
       case KeyUsage.CRL_SIGN:
-        return 'CRL Sign';
+        return l10n.kuCRLSign;
       case KeyUsage.ENCIPHER_ONLY:
-        return 'Encipher Only';
+        return l10n.kuEncipherOnly;
       case KeyUsage.DECIPHER_ONLY:
-        return 'Decipher Only';
+        return l10n.kuDecipherOnly;
     }
   }
 
-  String _extKeyUsageLabel(ExtendedKeyUsage eku) {
+  String _extKeyUsageLabel(ExtendedKeyUsage eku, AppLocalizations l10n) {
     switch (eku) {
       case ExtendedKeyUsage.SERVER_AUTH:
-        return 'Server Auth';
+        return l10n.ekuServerAuth;
       case ExtendedKeyUsage.CLIENT_AUTH:
-        return 'Client Auth';
+        return l10n.ekuClientAuth;
       case ExtendedKeyUsage.CODE_SIGNING:
-        return 'Code Signing';
+        return l10n.ekuCodeSigning;
       case ExtendedKeyUsage.EMAIL_PROTECTION:
-        return 'Email';
+        return l10n.ekuEmail;
       case ExtendedKeyUsage.TIME_STAMPING:
-        return 'Time Stamping';
+        return l10n.ekuTimeStamping;
       case ExtendedKeyUsage.OCSP_SIGNING:
-        return 'OCSP Signing';
+        return l10n.ekuOCSPSigning;
       case ExtendedKeyUsage.BIMI:
-        return 'BIMI';
+        return l10n.ekuBIMI;
     }
   }
 }

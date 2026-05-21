@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 
 /// UTCTime 只支援 1950–2049 年。
@@ -248,14 +249,14 @@ class _ValidityInputState extends State<ValidityInput> {
 
   /// 單位顯示文字
   String _unitLabel(ValidityUnit unit) {
-    // 這裡無法直接使用 AppLocalizations（依賴 context），改用簡短英文
+    final AppLocalizations l10n = AppLocalizations.of(context);
     switch (unit) {
       case ValidityUnit.days:
-        return 'Days';
+        return l10n.validityDays;
       case ValidityUnit.months:
-        return 'Months';
+        return l10n.validityMonths;
       case ValidityUnit.years:
-        return 'Years';
+        return l10n.validityYears;
     }
   }
 }

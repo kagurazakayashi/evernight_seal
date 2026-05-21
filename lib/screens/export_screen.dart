@@ -335,7 +335,7 @@ class ExportScreen extends StatelessWidget {
     try {
       final Uint8List bytes = Uint8List.fromList(utf8.encode(pem));
       final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: 'Save File',
+        dialogTitle: l10n.dialogSaveFile,
         fileName: defaultFileName,
         type: FileType.any,
         bytes: bytes,
@@ -346,7 +346,7 @@ class ExportScreen extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Saved to: $outputPath'),
+              content: Text(l10n.savedToPath(outputPath)),
               duration: const Duration(seconds: 2),
               backgroundColor: AppColors.surface,
             ),
@@ -358,7 +358,7 @@ class ExportScreen extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Save failed: $e'),
+            content: Text(l10n.saveFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );

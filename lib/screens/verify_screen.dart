@@ -125,10 +125,11 @@ class _VerifyScreenState extends State<VerifyScreen> {
     final keyText = _keyController.text.trim().replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
     debugPrint('[VerifyScreen] 開始驗證: cert=${certText.length} chars, key=${keyText.length} chars');
+    final l10n = AppLocalizations.of(context);
 
     if (certText.isEmpty || keyText.isEmpty) {
       setState(() {
-        _errorMessage = 'Both certificate and private key are required';
+        _errorMessage = l10n.verifyBothRequired;
         _matchResult = null;
       });
       return;
@@ -145,7 +146,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
       final certResult = CertificateService.parsePemText(certText);
       if (!certResult.isSuccess || certResult.certificates.isEmpty) {
         setState(() {
-          _errorMessage = certResult.errorMessage ?? 'Failed to parse certificate';
+          _errorMessage = certResult.errorMessage ?? l10n.verifyParseFailed;
           _isVerifying = false;
         });
         return;
@@ -157,7 +158,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
       // 檢查私鑰
       if (!CertificateService.hasPrivateKeyPem(keyText)) {
         setState(() {
-          _errorMessage = 'No private key found in the input';
+          _errorMessage = l10n.verifyNoKeyFound;
           _isVerifying = false;
         });
         return;
@@ -167,7 +168,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
       final keyBlocks = CertificateService.extractPrivateKeyBlocks(keyText);
       if (keyBlocks.isEmpty) {
         setState(() {
-          _errorMessage = 'Failed to extract private key block';
+          _errorMessage = l10n.verifyExtractKeyFailed;
           _isVerifying = false;
         });
         return;

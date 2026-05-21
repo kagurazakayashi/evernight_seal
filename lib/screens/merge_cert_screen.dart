@@ -116,7 +116,6 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
 
       // 載入私鑰（若可用）
       if (_hasLastKey) {
-        _includeKey = true;
         _privateKeyPem = widget.lastGeneratedKeyPem;
         try {
           final info =
@@ -151,9 +150,10 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
 
   Future<void> _loadCertFromFile(int index) async {
     debugPrint('[MergeCertScreen] 開啟憑證檔案 #$index');
+    final l10n = AppLocalizations.of(context);
     try {
       final result = await FilePicker.pickFiles(
-        dialogTitle: 'Open Certificate File',
+        dialogTitle: l10n.dialogOpenCertFile,
         type: FileType.any,
         withData: true,
       );
@@ -165,13 +165,13 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
       try {
         pem = utf8.decode(bytes);
       } catch (_) {
-        setState(() => _errorMessage = 'Failed to read file as text');
+        setState(() => _errorMessage = l10n.errorReadFileText);
         return;
       }
 
       if (!pem.contains('BEGIN CERTIFICATE')) {
         setState(
-            () => _errorMessage = 'No valid certificate found in the file');
+            () => _errorMessage = l10n.errorNoCertInFile);
         return;
       }
 
@@ -239,9 +239,10 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
 
   Future<void> _loadKeyFromFile() async {
     debugPrint('[MergeCertScreen] 開啟私鑰檔案');
+    final l10n = AppLocalizations.of(context);
     try {
       final result = await FilePicker.pickFiles(
-        dialogTitle: 'Open Private Key File',
+        dialogTitle: l10n.dialogOpenKeyFile,
         type: FileType.any,
         withData: true,
       );
@@ -253,13 +254,13 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
       try {
         pem = utf8.decode(bytes);
       } catch (_) {
-        setState(() => _errorMessage = 'Failed to read file as text');
+        setState(() => _errorMessage = l10n.errorReadFileText);
         return;
       }
 
       if (!CertificateService.hasPrivateKeyPem(pem)) {
         setState(
-            () => _errorMessage = 'No valid private key found in the file');
+            () => _errorMessage = l10n.errorNoKeyInFile);
         return;
       }
 
@@ -353,11 +354,12 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
     final ext = _outputFormat == 'PKCS7' ? 'p7b' : 'pem';
     final defaultName = 'merged_chain.$ext';
     debugPrint('[MergeCertScreen] 儲存檔案: $defaultName');
+    final l10n = AppLocalizations.of(context);
 
     try {
       final bytes = utf8.encode(text);
       final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: 'Save File',
+        dialogTitle: l10n.dialogSaveFile,
         fileName: defaultName,
         type: FileType.any,
         bytes: bytes,
@@ -368,7 +370,7 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Saved to: $outputPath'),
+              content: Text(l10n.savedToPath(outputPath)),
               duration: const Duration(seconds: 2),
               backgroundColor: AppColors.surface,
             ),
@@ -380,7 +382,7 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Save failed: $e'),
+            content: Text(l10n.saveFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -786,7 +788,7 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
               if (_outputFormat == 'PKCS7') ...[
                 const SizedBox(width: 8),
                 Text(
-                  '(N/A for PKCS#7)',
+                  l10n.naForPKCS7,
                   style: TextStyle(
                     color: AppColors.textHint.withValues(alpha: 0.6),
                     fontSize: 11,

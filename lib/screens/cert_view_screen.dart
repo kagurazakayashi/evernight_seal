@@ -100,6 +100,7 @@ class CertViewScreenState extends State<CertViewScreen> {
   }
 
   Future<void> _pickAndParseFile() async {
+    final l10n = AppLocalizations.of(context);
     debugPrint('[CertViewScreen] 開啟檔案選擇器');
 
     try {
@@ -122,7 +123,7 @@ class CertViewScreenState extends State<CertViewScreen> {
       final file = result.files.first;
       final bytes = file.bytes;
       if (bytes == null) {
-        setState(() => _errorMessage = 'Failed to read file');
+        setState(() => _errorMessage = l10n.errorReadFile);
         return;
       }
 
@@ -140,7 +141,7 @@ class CertViewScreenState extends State<CertViewScreen> {
       _parseFileBytes(bytes, file.name);
     } catch (e) {
       setState(() {
-        _errorMessage = 'File picker error: $e';
+        _errorMessage = l10n.errorFilePicker(e.toString());
         _isLoading = false;
       });
     }
@@ -440,7 +441,7 @@ class CertViewScreenState extends State<CertViewScreen> {
               ),
               const Spacer(),
               Text(
-                '${certs.length} cert(s)',
+                l10n.certCountLabel(certs.length),
                 style: const TextStyle(color: AppColors.textHint, fontSize: 12),
               ),
             ],
@@ -493,7 +494,7 @@ class CertViewScreenState extends State<CertViewScreen> {
                 icon: _showPasteArea
                     ? Icons.keyboard_hide_outlined
                     : Icons.paste_outlined,
-                label: _showPasteArea ? 'Hide' : 'Paste',
+                label: _showPasteArea ? l10n.certViewHide : l10n.certViewPaste,
                 onPressed: () {
                   setState(() => _showPasteArea = !_showPasteArea);
                 },
@@ -604,7 +605,7 @@ class CertViewScreenState extends State<CertViewScreen> {
             _DetailRow(label: l10n.certViewPrivateKeyType, value: pk.algorithm),
             if (pk.keySize != null) ...[
               const SizedBox(height: 4),
-              _DetailRow(label: l10n.certViewPrivateKeySize, value: '${pk.keySize} bits'),
+              _DetailRow(label: l10n.certViewPrivateKeySize, value: l10n.bitsSuffix(pk.keySize!)),
             ],
             if (pk.curveName != null) ...[
               const SizedBox(height: 4),
@@ -1316,7 +1317,7 @@ class _CertDetailCard extends StatelessWidget {
       if (items.isNotEmpty) items.add(const SizedBox(height: 4));
       items.add(_DetailRow(
         label: l10n.certViewKeySize,
-        value: '${spki.length} bits',
+        value: l10n.bitsSuffix(spki.length!),
       ));
     }
 
@@ -1534,14 +1535,14 @@ class _CertDetailCard extends StatelessWidget {
         if (ca != null)
           _DetailRow(
             label: l10n.certViewCA,
-            value: ca ? 'Yes' : 'No',
+            value: ca ? l10n.boolYes : l10n.boolNo,
             valueColor: ca ? AppColors.warning : AppColors.textSecondary,
           ),
         if (ca != null && pathLen != null) const SizedBox(height: 4),
         if (pathLen != null)
           _DetailRow(
             label: l10n.certViewPathLenConstraint,
-            value: pathLen < 0 ? 'None' : pathLen.toString(),
+            value: pathLen < 0 ? l10n.noneValue : pathLen.toString(),
           ),
       ],
     );
