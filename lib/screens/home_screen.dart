@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../widgets/side_menu.dart';
 import 'cert_view_screen.dart';
+import 'quick_gen_screen.dart';
 import 'create_key_screen.dart';
 import 'self_ca_screen.dart';
 import 'create_csr_screen.dart';
@@ -56,6 +57,26 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _selectedIndex = 0);
   }
 
+  /// 一鍵產生完成後的回呼：設定全部 PEM 值
+  void _onQuickGenComplete(QuickGenResult result) {
+    debugPrint('[HomeScreen] 一鍵產生完成，設定全部 PEM');
+    setState(() {
+      _lastGeneratedKeyPem = result.serverKeyPem;
+      _lastGeneratedCACertPem = result.caCertPem;
+      _lastGeneratedCSRPem = result.csrPem;
+      _lastIssuedCertPem = result.issuedCertPem;
+      _lastMergedCertPem = result.mergedChainPem;
+    });
+  }
+
+  /// 導覽到匯出畫面（一鍵產生完成後呼叫）
+  void _navigateToExport() {
+    // 匯出畫面在 NavItem 列表中的索引（查看憑證 0 + 一鍵產生 1 + 步驟 1~7 = 索引 8）
+    const int exportIndex = 8;
+    debugPrint('[HomeScreen] 導覽到匯出畫面: #$exportIndex');
+    setState(() => _selectedIndex = exportIndex);
+  }
+
   List<NavItem> _buildItems() {
     final l10n = AppLocalizations.of(context);
     return [
@@ -64,6 +85,15 @@ class _HomeScreenState extends State<HomeScreen> {
         subtitle: l10n.menuViewCertDesc,
         icon: Icons.visibility_outlined,
         page: CertViewScreen(key: _certViewKey),
+      ),
+      NavItem(
+        title: l10n.menuQuickGen,
+        subtitle: l10n.menuQuickGenDesc,
+        icon: Icons.flash_on_outlined,
+        page: QuickGenScreen(
+          onGenerated: _onQuickGenComplete,
+          onGoExport: _navigateToExport,
+        ),
       ),
       NavItem(
         title: l10n.menuCreateKey,
@@ -144,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
           lastGeneratedCSRPem: _lastGeneratedCSRPem,
           lastIssuedCertPem: _lastIssuedCertPem,
           lastMergedCertPem: _lastMergedCertPem,
+          onViewDetails: _navigateToCertView,
         ),
       ),
       NavItem(title: l10n.menuKeyManager, subtitle: l10n.menuKeyManagerDesc, icon: Icons.folder_outlined, page: const KeyManagerScreen()),

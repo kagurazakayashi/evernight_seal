@@ -314,5 +314,29 @@
   "ekuEmail": "電子郵件",
   "ekuTimeStamping": "時間戳記",
   "ekuOCSPSigning": "OCSP 簽名",
-  "ekuBIMI": "BIMI"
+  "ekuBIMI": "BIMI",
+
+  "menuQuickGen": "一鍵產生",
+  "menuQuickGenDesc": "輸入 CN 一鍵產生全套憑證檔案",
+  "quickGenTitle": "一鍵產生",
+  "quickGenCNLabel": "通用名稱 (CN)",
+  "quickGenCNHint": "例如：example.com",
+  "quickGenButton": "一鍵產生全部",
+  "quickGenGenerating": "正在產生...",
+  "quickGenSuccess": "全套憑證已成功產生！",
+  "quickGenGoExport": "前往匯出",
+  "quickGenStepCAKey": "產生 CA 私鑰 (RSA 2048)",
+  "quickGenStepCACert": "產生自簽名 CA 憑證",
+  "quickGenStepServerKey": "產生伺服器私鑰 (RSA 2048)",
+  "quickGenStepCSR": "產生憑證簽名請求",
+  "quickGenStepCert": "簽發伺服器憑證",
+  "quickGenStepMerge": "合併憑證鏈",
+  "quickGenStepDone": "全部完成！",
+  "quickGenResultSummary": "已為 CN: {cn} 產生 {count} 個項目",
+  "@quickGenResultSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "cn": { "type": "String" }
+    }
+  }
 }

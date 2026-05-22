@@ -314,5 +314,29 @@
   "ekuEmail": "メール",
   "ekuTimeStamping": "タイムスタンプ",
   "ekuOCSPSigning": "OCSP 署名",
-  "ekuBIMI": "BIMI"
+  "ekuBIMI": "BIMI",
+
+  "menuQuickGen": "ワンクリック生成",
+  "menuQuickGenDesc": "CN を入力して証明書一式をワンクリック生成",
+  "quickGenTitle": "ワンクリック生成",
+  "quickGenCNLabel": "共通名 (CN)",
+  "quickGenCNHint": "例：example.com",
+  "quickGenButton": "すべて生成",
+  "quickGenGenerating": "生成中...",
+  "quickGenSuccess": "証明書一式の生成が完了しました！",
+  "quickGenGoExport": "エクスポートへ",
+  "quickGenStepCAKey": "CA 秘密鍵を生成 (RSA 2048)",
+  "quickGenStepCACert": "自己署名 CA 証明書を生成",
+  "quickGenStepServerKey": "サーバー秘密鍵を生成 (RSA 2048)",
+  "quickGenStepCSR": "証明書署名要求を生成",
+  "quickGenStepCert": "サーバー証明書を発行",
+  "quickGenStepMerge": "証明書チェーンを結合",
+  "quickGenStepDone": "すべて完了！",
+  "quickGenResultSummary": "CN: {cn} に対して {count} 個のアイテムを生成しました",
+  "@quickGenResultSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "cn": { "type": "String" }
+    }
+  }
 }

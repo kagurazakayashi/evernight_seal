@@ -314,5 +314,29 @@
   "ekuEmail": "电子邮件",
   "ekuTimeStamping": "时间戳",
   "ekuOCSPSigning": "OCSP 签名",
-  "ekuBIMI": "BIMI"
+  "ekuBIMI": "BIMI",
+
+  "menuQuickGen": "一键生成",
+  "menuQuickGenDesc": "输入 CN 一键生成全套证书文件",
+  "quickGenTitle": "一键生成",
+  "quickGenCNLabel": "通用名称 (CN)",
+  "quickGenCNHint": "例如：example.com",
+  "quickGenButton": "一键生成全部",
+  "quickGenGenerating": "正在生成...",
+  "quickGenSuccess": "全套证书已成功生成！",
+  "quickGenGoExport": "前往导出",
+  "quickGenStepCAKey": "生成 CA 私钥 (RSA 2048)",
+  "quickGenStepCACert": "生成自签名 CA 证书",
+  "quickGenStepServerKey": "生成服务器私钥 (RSA 2048)",
+  "quickGenStepCSR": "生成证书签名请求",
+  "quickGenStepCert": "签发服务器证书",
+  "quickGenStepMerge": "合并证书链",
+  "quickGenStepDone": "全部完成！",
+  "quickGenResultSummary": "已为 CN: {cn} 生成 {count} 个项目",
+  "@quickGenResultSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "cn": { "type": "String" }
+    }
+  }
 }

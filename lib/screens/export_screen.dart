@@ -27,6 +27,9 @@ class ExportScreen extends StatelessWidget {
   /// 從合併憑證畫面產生的合併結果 PEM
   final String? lastMergedCertPem;
 
+  /// 查看詳細資訊的回呼，傳入 PEM 文字後導覽到憑證檢視畫面
+  final ValueChanged<String>? onViewDetails;
+
   const ExportScreen({
     super.key,
     this.lastGeneratedKeyPem,
@@ -34,6 +37,7 @@ class ExportScreen extends StatelessWidget {
     this.lastGeneratedCSRPem,
     this.lastIssuedCertPem,
     this.lastMergedCertPem,
+    this.onViewDetails,
   });
 
   @override
@@ -300,6 +304,17 @@ class ExportScreen extends StatelessWidget {
                   label: l10n.exportCopy,
                   onPressed: () => _copyPem(context, l10n, item.pem!),
                 ),
+                if (onViewDetails != null) ...[
+                  const Spacer(),
+                  _ActionChip(
+                    icon: Icons.visibility_outlined,
+                    label: l10n.selfCAViewDetails,
+                    onPressed: () {
+                      debugPrint('[ExportScreen] 查看詳細: ${item.title}');
+                      onViewDetails!(item.pem!);
+                    },
+                  ),
+                ],
               ],
             ),
           ],

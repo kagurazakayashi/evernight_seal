@@ -317,5 +317,29 @@
   "ekuEmail": "Email",
   "ekuTimeStamping": "Time Stamping",
   "ekuOCSPSigning": "OCSP Signing",
-  "ekuBIMI": "BIMI"
+  "ekuBIMI": "BIMI",
+
+  "menuQuickGen": "Quick Generate",
+  "menuQuickGenDesc": "One-click generate full certificate set from CN",
+  "quickGenTitle": "Quick Generate",
+  "quickGenCNLabel": "Common Name (CN)",
+  "quickGenCNHint": "e.g. example.com",
+  "quickGenButton": "Generate All",
+  "quickGenGenerating": "Generating...",
+  "quickGenSuccess": "All certificates generated successfully!",
+  "quickGenGoExport": "Go to Export",
+  "quickGenStepCAKey": "Generate CA private key (RSA 2048)",
+  "quickGenStepCACert": "Generate self-signed CA certificate",
+  "quickGenStepServerKey": "Generate server private key (RSA 2048)",
+  "quickGenStepCSR": "Generate certificate signing request",
+  "quickGenStepCert": "Issue server certificate",
+  "quickGenStepMerge": "Merge certificate chain",
+  "quickGenStepDone": "All done!",
+  "quickGenResultSummary": "Generated {count} items for CN: {cn}",
+  "@quickGenResultSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "cn": { "type": "String" }
+    }
+  }
 }

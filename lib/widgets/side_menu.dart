@@ -124,7 +124,7 @@ class _SidebarColumn extends StatelessWidget {
             children: [
               for (int i = 0; i < items.length; i++) ...[
                 _SidebarMenuItem(item: items[i], index: i, isSelected: i == selectedIndex, compact: compact, onTap: () => onItemSelected(i)),
-                if (i == 0 || i == 7) Padding(
+                if (i == 1 || i == 8) Padding(
                   padding: EdgeInsets.symmetric(vertical: compact ? 6 : 8),
                   child: Divider(color: AppColors.primaryDark.withValues(alpha: 0.5), indent: compact ? 12 : 0, endIndent: compact ? 12 : 0),
                 ),
@@ -158,7 +158,7 @@ class _MobileSideMenu extends StatelessWidget {
             children: [
               for (int i = 0; i < items.length; i++) ...[
                 _SidebarMenuItem(item: items[i], index: i, isSelected: i == selectedIndex, compact: false, onTap: () => onItemSelected(i)),
-                if (i == 0 || i == 7) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Divider(color: AppColors.primaryDark.withValues(alpha: 0.5), height: 1)),
+                if (i == 1 || i == 8) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Divider(color: AppColors.primaryDark.withValues(alpha: 0.5), height: 1)),
               ],
             ],
           ),
