@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../services/certificate_service.dart';
 import '../theme/app_colors.dart';
+import '../utils/file_saver.dart';
 
 /// 建立憑證請求（CSR）畫面
 ///
@@ -386,43 +387,15 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
     debugPrint('[CreateCSRScreen] 已複製到剪貼簿');
   }
 
+  /// 輸出 PEM 檔案（桌面儲存/行動匯出/Web 下載）
   Future<void> _savePem(String pem, String defaultName) async {
-    debugPrint('[CreateCSRScreen] 儲存檔案: $defaultName');
-    final l10n = AppLocalizations.of(context);
-
-    try {
-      final bytes = utf8.encode(pem);
-      final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: l10n.dialogSaveFile,
-        fileName: defaultName,
-        type: FileType.any,
-        bytes: bytes,
-      );
-
-      if (outputPath != null && outputPath.isNotEmpty) {
-        debugPrint('[CreateCSRScreen] 檔案已儲存至: $outputPath');
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.savedToPath(outputPath)),
-              duration: const Duration(seconds: 2),
-              backgroundColor: AppColors.surface,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('[CreateCSRScreen] 儲存失敗: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.saveFailed(e.toString())),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+    await outputFileWithFeedback(
+      context: context,
+      l10n: AppLocalizations.of(context),
+      content: pem,
+      defaultFileName: defaultName,
+      debugTag: '[CreateCSRScreen]',
+    );
   }
 
   void _clearAll() {
@@ -1146,8 +1119,12 @@ class _CreateCSRScreenState extends State<CreateCSRScreen> {
             ),
             const SizedBox(width: 8),
             _ActionChip(
-              icon: Icons.save_outlined,
-              label: l10n.csrSavePem,
+              icon: outputFileIcon,
+              label: platformFileLabel(
+                desktop: l10n.csrSavePem,
+                mobile: l10n.csrExportPem,
+                web: l10n.csrDownloadPem,
+              ),
               onPressed: () => _savePem(csrPem, defaultFileName),
             ),
             if (widget.onViewDetails != null) ...[

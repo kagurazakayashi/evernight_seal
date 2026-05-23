@@ -1,11 +1,9 @@
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
+import '../utils/file_saver.dart';
 
 /// 匯出憑證與私鑰畫面
 ///
@@ -170,9 +168,13 @@ class ExportScreen extends StatelessWidget {
       height: 44,
       child: ElevatedButton.icon(
         onPressed: () => _saveAll(context, l10n, items),
-        icon: const Icon(Icons.save_alt_outlined, size: 20),
+        icon: Icon(outputAllIcon, size: 20),
         label: Text(
-          l10n.exportSaveAll,
+          platformFileLabel(
+            desktop: l10n.exportSaveAll,
+            mobile: l10n.exportExportAll,
+            web: l10n.exportDownloadAll,
+          ),
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -293,8 +295,12 @@ class ExportScreen extends StatelessWidget {
             Row(
               children: [
                 _ActionChip(
-                  icon: Icons.save_outlined,
-                  label: l10n.exportSave,
+                  icon: outputFileIcon,
+                  label: platformFileLabel(
+                    desktop: l10n.exportSave,
+                    mobile: l10n.exportExportFile,
+                    web: l10n.exportDownloadFile,
+                  ),
                   onPressed: () =>
                       _saveFile(context, l10n, item.pem!, item.defaultFileName),
                 ),
@@ -338,56 +344,29 @@ class ExportScreen extends StatelessWidget {
     debugPrint('[ExportScreen] 已複製到剪貼簿');
   }
 
-  /// 儲存單一檔案
+  /// 輸出單一檔案（桌面儲存/行動匯出/Web 下載）
   Future<void> _saveFile(
     BuildContext context,
     AppLocalizations l10n,
     String pem,
     String defaultFileName,
   ) async {
-    debugPrint('[ExportScreen] 儲存檔案: $defaultFileName');
-
-    try {
-      final Uint8List bytes = Uint8List.fromList(utf8.encode(pem));
-      final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: l10n.dialogSaveFile,
-        fileName: defaultFileName,
-        type: FileType.any,
-        bytes: bytes,
-      );
-
-      if (outputPath != null && outputPath.isNotEmpty) {
-        debugPrint('[ExportScreen] 已儲存至: $outputPath');
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.savedToPath(outputPath)),
-              duration: const Duration(seconds: 2),
-              backgroundColor: AppColors.surface,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('[ExportScreen] 儲存失敗: $e');
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.saveFailed(e.toString())),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+    await outputFileWithFeedback(
+      context: context,
+      l10n: l10n,
+      content: pem,
+      defaultFileName: defaultFileName,
+      debugTag: '[ExportScreen]',
+    );
   }
 
-  /// 逐一儲存所有可用項目
+  /// 逐一輸出所有可用項目
   Future<void> _saveAll(
     BuildContext context,
     AppLocalizations l10n,
     List<_ExportItem> items,
   ) async {
-    debugPrint('[ExportScreen] 全部儲存');
+    debugPrint('[ExportScreen] 全部輸出');
     final List<_ExportItem> available =
         items.where((e) => e.pem != null).toList();
 

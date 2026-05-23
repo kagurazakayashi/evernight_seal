@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../services/certificate_service.dart';
 import '../theme/app_colors.dart';
+import '../utils/file_saver.dart';
 
 /// 合併憑證畫面
 ///
@@ -350,44 +351,17 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
     debugPrint('[MergeCertScreen] 已複製到剪貼簿');
   }
 
+  /// 輸出合併結果檔案（桌面儲存/行動匯出/Web 下載）
   Future<void> _saveResult(String text) async {
-    final ext = _outputFormat == 'PKCS7' ? 'p7b' : 'pem';
-    final defaultName = 'merged_chain.$ext';
-    debugPrint('[MergeCertScreen] 儲存檔案: $defaultName');
-    final l10n = AppLocalizations.of(context);
-
-    try {
-      final bytes = utf8.encode(text);
-      final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: l10n.dialogSaveFile,
-        fileName: defaultName,
-        type: FileType.any,
-        bytes: bytes,
-      );
-
-      if (outputPath != null && outputPath.isNotEmpty) {
-        debugPrint('[MergeCertScreen] 已儲存至: $outputPath');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.savedToPath(outputPath)),
-              duration: const Duration(seconds: 2),
-              backgroundColor: AppColors.surface,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('[MergeCertScreen] 儲存失敗: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.saveFailed(e.toString())),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+    final String ext = _outputFormat == 'PKCS7' ? 'p7b' : 'pem';
+    final String defaultName = 'merged_chain.$ext';
+    await outputFileWithFeedback(
+      context: context,
+      l10n: AppLocalizations.of(context),
+      content: text,
+      defaultFileName: defaultName,
+      debugTag: '[MergeCertScreen]',
+    );
   }
 
   // ============================================================
@@ -1101,8 +1075,12 @@ class _MergeCertScreenState extends State<MergeCertScreen> {
             ),
             const SizedBox(width: 8),
             _ActionChip(
-              icon: Icons.save_outlined,
-              label: l10n.mergeCertSaveResult,
+              icon: outputFileIcon,
+              label: platformFileLabel(
+                desktop: l10n.mergeCertSaveResult,
+                mobile: l10n.mergeCertExportResult,
+                web: l10n.mergeCertDownloadResult,
+              ),
               onPressed: () => _saveResult(result),
             ),
             if (widget.onViewDetails != null) ...[

@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../services/key_service.dart';
 import '../theme/app_colors.dart';
+import '../utils/file_saver.dart';
 
 /// 建立私鑰畫面
 ///
@@ -128,43 +126,16 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
     debugPrint('[CreateKeyScreen] 已複製到剪貼簿');
   }
 
+  /// 輸出金鑰檔案（桌面儲存/行動匯出/Web 下載）
   Future<void> _saveKey(String pem, String defaultName) async {
-    debugPrint('[CreateKeyScreen] 儲存金鑰檔案: $defaultName');
-    final l10n = AppLocalizations.of(context);
-
-    try {
-      final bytes = utf8.encode(pem);
-      final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: l10n.dialogSaveKeyFile,
-        fileName: defaultName,
-        type: FileType.any,
-        bytes: bytes,
-      );
-
-      if (outputPath != null && outputPath.isNotEmpty) {
-        debugPrint('[CreateKeyScreen] 金鑰已儲存至: $outputPath');
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.savedToPath(outputPath)),
-              duration: const Duration(seconds: 2),
-              backgroundColor: AppColors.surface,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('[CreateKeyScreen] 儲存失敗: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.saveFailed(e.toString())),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+    await outputFileWithFeedback(
+      context: context,
+      l10n: AppLocalizations.of(context),
+      content: pem,
+      defaultFileName: defaultName,
+      dialogTitle: AppLocalizations.of(context).dialogSaveKeyFile,
+      debugTag: '[CreateKeyScreen]',
+    );
   }
 
   void _clearAll() {
@@ -524,8 +495,12 @@ class _CreateKeyScreenState extends State<CreateKeyScreen> {
             ),
             const SizedBox(width: 8),
             _ActionChip(
-              icon: Icons.save_outlined,
-              label: l10n.createKeySave,
+              icon: outputFileIcon,
+              label: platformFileLabel(
+                desktop: l10n.createKeySave,
+                mobile: l10n.createKeyExport,
+                web: l10n.createKeyDownload,
+              ),
               onPressed: () => _saveKey(currentPem, defaultFileName),
             ),
             if (widget.onViewDetails != null) ...[

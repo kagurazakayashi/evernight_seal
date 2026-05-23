@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../services/certificate_service.dart';
 import '../theme/app_colors.dart';
+import '../utils/file_saver.dart';
 import '../widgets/validity_input.dart';
 
 /// 自簽名 CA 憑證畫面
@@ -521,44 +522,15 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
     debugPrint('[SelfCAScreen] 已複製到剪貼簿');
   }
 
+  /// 輸出 PEM 檔案（桌面儲存/行動匯出/Web 下載）
   Future<void> _savePem(String pem, String defaultName) async {
-    debugPrint('[SelfCAScreen] 儲存檔案: $defaultName');
-    final l10n = AppLocalizations.of(context);
-
-    try {
-      final bytes = utf8.encode(pem);
-      final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: l10n.dialogSaveFile,
-        fileName: defaultName,
-        type: FileType.any,
-        bytes: bytes,
-      );
-
-      if (outputPath != null && outputPath.isNotEmpty) {
-        debugPrint('[SelfCAScreen] 檔案已儲存至: $outputPath');
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.savedToPath(outputPath)),
-              duration: const Duration(seconds: 2),
-              backgroundColor: AppColors.surface,
-      ),
+    await outputFileWithFeedback(
+      context: context,
+      l10n: AppLocalizations.of(context),
+      content: pem,
+      defaultFileName: defaultName,
+      debugTag: '[SelfCAScreen]',
     );
-  }
-}
-
-    } catch (e) {
-      debugPrint('[SelfCAScreen] 儲存失敗: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.saveFailed(e.toString())),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
   }
 
   void _clearAll() {
@@ -1453,10 +1425,18 @@ class _SelfCAScreenState extends State<SelfCAScreen> {
             ),
             const SizedBox(width: 8),
             _ActionChip(
-              icon: Icons.save_outlined,
+              icon: outputFileIcon,
               label: _selectedResultTab == 0
-                  ? l10n.selfCASaveCert
-                  : l10n.selfCASaveKey,
+                  ? platformFileLabel(
+                      desktop: l10n.selfCASaveCert,
+                      mobile: l10n.selfCAExportCert,
+                      web: l10n.selfCADownloadCert,
+                    )
+                  : platformFileLabel(
+                      desktop: l10n.selfCASaveKey,
+                      mobile: l10n.selfCAExportKey,
+                      web: l10n.selfCADownloadKey,
+                    ),
               onPressed: () => _savePem(currentPem, defaultFileName),
             ),
             if (widget.onViewDetails != null) ...[

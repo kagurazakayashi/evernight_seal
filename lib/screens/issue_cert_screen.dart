@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../services/certificate_service.dart';
 import '../theme/app_colors.dart';
+import '../utils/file_saver.dart';
 import '../widgets/validity_input.dart';
 
 /// 使用 CA 簽發憑證畫面
@@ -656,41 +657,15 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
     debugPrint('[IssueCertScreen] 已複製到剪貼簿');
   }
 
+  /// 輸出 PEM 檔案（桌面儲存/行動匯出/Web 下載）
   Future<void> _savePem(String pem, String defaultName) async {
-    final l10n = AppLocalizations.of(context);
-    debugPrint('[IssueCertScreen] 儲存檔案: $defaultName');
-    try {
-      final bytes = utf8.encode(pem);
-      final String? outputPath = await FilePicker.saveFile(
-        dialogTitle: l10n.dialogSaveFile,
-        fileName: defaultName,
-        type: FileType.any,
-        bytes: bytes,
-      );
-
-      if (outputPath != null && outputPath.isNotEmpty) {
-        debugPrint('[IssueCertScreen] 檔案已儲存至: $outputPath');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.savedToPath(outputPath)),
-              duration: const Duration(seconds: 2),
-              backgroundColor: AppColors.surface,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('[IssueCertScreen] 儲存失敗: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.saveFailed(e.toString())),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+    await outputFileWithFeedback(
+      context: context,
+      l10n: AppLocalizations.of(context),
+      content: pem,
+      defaultFileName: defaultName,
+      debugTag: '[IssueCertScreen]',
+    );
   }
 
   // ============================================================
@@ -1591,8 +1566,12 @@ class _IssueCertScreenState extends State<IssueCertScreen> {
             ),
             const SizedBox(width: 8),
             _ActionChip(
-              icon: Icons.save_outlined,
-              label: l10n.issueCertSavePem,
+              icon: outputFileIcon,
+              label: platformFileLabel(
+                desktop: l10n.issueCertSavePem,
+                mobile: l10n.issueCertExportPem,
+                web: l10n.issueCertDownloadPem,
+              ),
               onPressed: () => _savePem(certPem, defaultFileName),
             ),
             if (widget.onViewDetails != null) ...[
